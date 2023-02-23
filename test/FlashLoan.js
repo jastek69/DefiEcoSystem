@@ -19,17 +19,16 @@ const shares = ether
 describe('FlashLoan', () => {
   // Accounts
   let deployer,
-      trader
+      trade
 
   // Contracts    
   let token1,
-      FlashLoanPool,
       Trader
 
 
 beforeEach(async () => {
-  trader = await ethers.getSigners()
-  deployer = trader[1],
+  trade = await ethers.getSigners()
+  deployer = trade[1],
 })
 
   it('Borrowing 1M USD and throws revert info msg.', async () => {
@@ -38,19 +37,19 @@ beforeEach(async () => {
     accounts = await ethers.getSigners()
     deployer = accounts[0]
 
-    const FlashLoanPool = await ethers.getContractFactory('FlashLoanPool')
-    FlashLoanPool = await FlashLoanPool.deploy()
+    const Trader = await ethers.getContractFactory('Trader')
+    Trader = await Trader.deploy()
       
     const Token = await ethers.getContractFactory('Token')
     token1 = await Token.deploy('USD Token', 'USD', '1000000000')
 
 
-    let transaction = await token1.FlashLoan(borrowAmount).approve(deployer.address, borrowAmount)
+    let transaction = await token1.Trader(borrowAmount).approve(deployer.address, borrowAmount)
     await transaction.wait()
 
     IERC20(token1).transfer(deployer, IERC20(token1).balanceOf(address(this)) - borrowAmount);
 
     // Return Funds
-    IERC20(token1).transfer(FlashLoanPool, borrowAmount);
+    IERC20(token1).transfer(Trader, borrowAmount);
   })          
 })
