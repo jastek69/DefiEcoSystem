@@ -1,5 +1,6 @@
 // -- IMPORT PACKAGES -- //
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { Contract } from "hardhat/internal/hardhat-network/stack-traces/model";
 
 
 const { expect } = require('chai');
@@ -28,28 +29,24 @@ describe('FlashLoan', () => {
 
 beforeEach(async () => {
   trade = await ethers.getSigners()
-  deployer = trade[1],
+  deployer = trade[1]
 })
 
   it('Borrowing 1M USD and throws revert info msg.', async () => {
-
-    borrowAmount = tokens(1000000)
-    accounts = await ethers.getSigners()
-    deployer = accounts[0]
+    const Token = await ethers.getContractFactory('Token')
+    let token1 = await Token.deploy('USD Token', 'USD', tokens('1000000000')) // Deploy 1 Billion tokens
 
     const Trader = await ethers.getContractFactory('Trader')
-    Trader = await Trader.deploy()
-      
-    const Token = await ethers.getContractFactory('Token')
-    token1 = await Token.deploy('USD Token', 'USD', '1000000000')
+    let trader = await Trader.deploy()
+    
+    trade = await ethers.getSigners()
+    deployer = trade[0]
 
+    await token1.approve(trader.address, tokens(1000000))
 
-    let transaction = await token1.Trader(borrowAmount).approve(deployer.address, borrowAmount)
-    await transaction.wait()
+    //Deposit
+    await trader.deposit(token1.address, tokens(1000000))
 
-    IERC20(token1).transfer(deployer, IERC20(token1).balanceOf(address(this)) - borrowAmount);
-
-    // Return Funds
-    IERC20(token1).transfer(Trader, borrowAmount);
+    expect(await token1.balanceOf(trader.address)).to.equal(tokens(1000000))
+    })        
   })          
-})

@@ -8,10 +8,12 @@ interface IReceiver {
     function receiveTokens(address tokenAddress, uint256 amount) external;
 }
 
-
 contract Trader {
-    address public owner;
+    address private owner;
 
+    constructor() {
+        owner = msg.sender;
+    }
 
 function FlashLoanPool(
     address token1,
@@ -24,6 +26,15 @@ function FlashLoanPool(
         borrowAmount,
         balanceBefore
     );
-}
 
+    require(msg.sender == owner, 'Must be used by owner');
+
+    IERC20(token1).transfer(
+        owner,
+        IERC20(token1).balanceOf(address(this)) - borrowAmount
+        );
+
+        // Return funds
+        IERC20(token1).transfer(FlashLoanPool, borrowAmount);
+    }
 }
