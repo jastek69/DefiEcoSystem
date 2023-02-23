@@ -1,8 +1,11 @@
 // -- IMPORT PACKAGES -- //
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 
-require("dotenv").config();
+// require("dotenv").config();
 
 const tokens = (n) => {
   return ethers.utils.parseUnits(n.toString(), 'ether')
@@ -14,23 +17,20 @@ const shares = ether
 // const FlashLoan = artifacts.require('./FlashLoan')
 
 describe('FlashLoan', () => {
-  
-  let borrowAmount,
-      transaction,
-      accounts,
-      deployer
+  // Accounts
+  let deployer,
+      trader
 
   // Contracts    
   let token1,
-      amm,
-      flashloan
+      FlashLoanPool,
+      Trader
 
 
 beforeEach(async () => {
-  accounts = await ethers.getSigners()
-  deployer = accounts[1]
+  trader = await ethers.getSigners()
+  deployer = trader[1],
 })
-
 
   it('Borrowing 1M USD and throws revert info msg.', async () => {
 
@@ -38,14 +38,19 @@ beforeEach(async () => {
     accounts = await ethers.getSigners()
     deployer = accounts[0]
 
-    const FlashLoan = await ethers.getContractFactory('FlashLoan')
-    flashloan = await FlashLoan.deploy()
+    const FlashLoanPool = await ethers.getContractFactory('FlashLoanPool')
+    FlashLoanPool = await FlashLoanPool.deploy()
       
     const Token = await ethers.getContractFactory('Token')
     token1 = await Token.deploy('USD Token', 'USD', '1000000000')
 
 
-    let transaction = await token1.FlashLoan(borrowAmount).approve(amm.address, borrowAmount)
+    let transaction = await token1.FlashLoan(borrowAmount).approve(deployer.address, borrowAmount)
     await transaction.wait()
+
+    IERC20(token1).transfer(deployer, IERC20(token1).balanceOf(address(this)) - borrowAmount);
+
+    // Return Funds
+    IERC20(token1).transfer(FlashLoanPool, borrowAmount);
   })          
 })
