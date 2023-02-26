@@ -31,6 +31,11 @@ async function main() {
 
   console.log(`AMM2 contract deployed to: ${amm2.address}\n`)
 
+  // Deploy FlashLoanPool
+  // const FlashLoanPool = await hre.ethers.getContractFactory('FlashLoanPool')
+  // const flp = await FlashLoanPool.deployed()
+  // console.log(`FlashLoanPool deployed to: ${flp.address} \n`)
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere

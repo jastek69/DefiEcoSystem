@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Unlicense
+pragma solidity ^0.8.0;
 
 // Contract inspired by Damn Vulnerable DeFi
 // Original Contract:
@@ -13,13 +14,13 @@ interface IReceiver {
     function receiveTokens(address tokenAddress, uint256 amount) external;
 }
 
-contract FlashLoan is ReentrancyGuard {
+contract FlashLoanPool is ReentrancyGuard {
     using SafeMath for uint256;
 
     Token public token;
     uint256 public poolBalance;
 
-    constructor(address tokenAddress) public {
+    constructor(address tokenAddress) {
         require(tokenAddress != address(0), "Token address cannot be zero");
         token = Token(tokenAddress);
     }

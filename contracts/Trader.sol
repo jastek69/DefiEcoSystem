@@ -1,40 +1,56 @@
+// SPDX-License-Identifier: Unlicense
+pragma solidity ^0.8.0;
+
 import "hardhat/console.sol";
 import "./Token.sol";
+import "./FlashLoanPool.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-interface IReceiver {
-    function receiveTokens(address tokenAddress, uint256 amount) external;
-}
 
 contract Trader {
-    address private owner;
+    // pass in FLP contract address save to State var - NOTE: must deploy FLP first
+    // NOTE: be sure to pass tokens in test
+    address constant flashLoanPool = 0x0; // NEED FlashloanPool address
+    uint256 borrowAmount;
+    
 
-    constructor() {
+    address public owner;
+    
+    constructor(address token1, address _flashLoanPool) payable {
         owner = msg.sender;
+    }     
+    
+    // call FLP similar to IReceiver(msg.sender).receiveTokens(address(token), borrowAmount);
+    // will be Public
+    function flashloan(address _token1, uint256 _borrowAmount) public {       
+        flashLoanPool(msg.sender).receiveTokens(address(_token1), _borrowAmount);    
     }
 
-function FlashLoanPool(
-    address token1,
-    uint256 borrowAmount 
-) external {
-    uint256 balanceBefore = IERC20(token1).balanceOf(address(this));
+    
+    // **************************************
+    // PSUEDO code
+    // interface IERC20 {
+    //     function transferFrom(
+    //         address _token1,
+    //         address _to,
+    //         uint256 __borrowAmount
+    //     ) external
+    //     returns (bool success);
+    //     }  
+    // ************************************** 
+    
 
-    bytes memory data = abi.encode(
-        token1,
-        borrowAmount,
-        balanceBefore
-    );
 
-    require(msg.sender == owner, 'Must be used by owner');
 
-    IERC20(token1).transfer(
-        owner,
-        IERC20(token1).balanceOf(address(this)) - borrowAmount
-        );
+    // same as FLP receive function - see above
+    // will be Public
+    function depositLoan(address token1, uint256 _borrowAmount) public payable {
+        flashLoanPool.receiveTokens(address(token1), _borrowAmount);   
+    
+    // do something with the money
 
-        // Return funds
-        IERC20(token1).transfer(FlashLoanPool, borrowAmount);
     }
 }
+
