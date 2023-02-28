@@ -13,11 +13,13 @@ contract Trader {
     // pass in FLP contract address save to State var - NOTE: must deploy FLP first. Be sure to pass tokens in test
    
    // address constant flashLoanPool = 0x0; // NEED FlashloanPool address will not compile
-    uint256 borrowAmount;    
+    uint256 borrowAmount;
     address public owner;
+    address token1;
     
     constructor(address _token1, address _flashLoanPoolAddress) payable {
-        owner = msg.sender;        
+        owner = msg.sender;
+        token1 = _token1;
         flashLoanPoolAddress = _flashLoanPoolAddress;
     }     
     
