@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract Trader {
     // pass in FLP contract address save to State var - NOTE: must deploy FLP first. Be sure to pass tokens in test
    
-   // address constant flashLoanPool = 0x0; // NEED FlashloanPool address will not compile
+    address flashLoanPoolAddress; // NEED FlashloanPool address will not compile
     uint256 borrowAmount;
     address public owner;
     address token1;
