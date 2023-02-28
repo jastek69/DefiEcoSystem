@@ -25,28 +25,14 @@ contract Trader {
     
     // call FLP similar to IReceiver(msg.sender).receiveTokens(address(token), borrowAmount);
     // will be Public
-    function flashloan(address _token1, uint256 _borrowAmount) public {       
+    function flashLoan(address _token1, uint256 _borrowAmount) public {       
         FlashLoanPool(msg.sender).receiveTokens(address(_token1), _borrowAmount);    
     }
 
     
-    // **************************************
-    // PSUEDO code
-    // interface IERC20 {
-    //     function transferFrom(
-    //         address _token1,
-    //         address _to,
-    //         uint256 __borrowAmount
-    //     ) external
-    //     returns (bool success);
-    //     }  
-    // ************************************** 
-    
-
-
     // same as FLP receive function - see above
     // will be Public
-    function depositLoan(address token1, uint256 _borrowAmount) public payable {
+    function depositLoan(address _token1, uint256 _borrowAmount) public payable {
         FlashLoanPool(flashLoanPoolAddress).receiveTokens(address(token1), _borrowAmount);   
     
     // do something with the money
