@@ -29,8 +29,7 @@ async function main() {
   const AMM2 = await hre.ethers.getContractFactory('AMM2')
   const amm2 = await AMM2.deploy(sobek.address, usd.address)
 
-  console.log(`AMM2 contract deployed to: ${amm2.address}\n`)
-  
+  console.log(`AMM2 contract deployed to: ${amm2.address}\n`)  
 }
 
 // We recommend this pattern to be able to use async/await everywhere
