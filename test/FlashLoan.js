@@ -34,7 +34,7 @@ beforeEach(async () => {
 
   it('Borrowing 1M USD and throws revert info msg.', async () => {
     const Token = await ethers.getContractFactory('Token')
-    let token1 = await Token.deploy('USD Token', 'USD', tokens('1000000000')) // Deploy 1 Billion tokens
+    let token1 = await Token.deploy('USD Token', 'USD', tokens('10000000')) // Deploy 1 Billion tokens
 
     const Trader = await ethers.getContractFactory('Trader')
     let trader = await Trader.deploy()
@@ -50,3 +50,4 @@ beforeEach(async () => {
     expect(await token1.balanceOf(trader.address)).to.equal(tokens(1000000))
     })        
   })          
+
