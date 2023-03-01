@@ -10,7 +10,7 @@ import "./Token.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-interface IReceiver {
+interface IReceiver { // interface for receiveTokens function in Trader.sol
     function receiveTokens(address tokenAddress, uint256 amount) external;
 }
 

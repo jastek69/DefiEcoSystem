@@ -30,7 +30,6 @@ describe('DES', () => {
         // contracts
     let token1, // Sobek token
         token2, // USD token 
-        // token 3 and token 4?
         amm1,
         amm2
     
@@ -115,6 +114,8 @@ describe('DES', () => {
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////
             // trader1 Swap Tokens from AMM to AMM2
+            //
+
             // Check Price before initiating trade
             console.log(`Price: ${await amm1.token2Balance() / await amm1.token1Balance()} \n`)
             console.log(`Price: ${await amm2.token2Balance() / await amm2.token1Balance()} \n`)
