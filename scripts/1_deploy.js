@@ -14,18 +14,18 @@ async function main() {
     console.log(`Sobek Token deployed to: ${sobek.address}\n`)
 
 
-    console.log(`Deploying contract...\n`)
+    console.log(`Deploying contracts...\n`)
     // Deploy FLP contract
     const FlashLoanPool = await hre.ethers.getContractFactory("FlashLoanPool")
     const flashLoanPool = await FlashLoanPool.deploy(sobek.address)
     await flashLoanPool.deployed()
-    console.log(`FlashLoanPool deployed to:", ${flashLoanPool.address}\n`);
+    console.log(`FlashLoanPool deployed to: ${flashLoanPool.address}\n`);
 
     // Deploy Trader contract
     const Trader = await ethers.getContractFactory("Trader");
     const trader = await Trader.deploy(sobek.address, flashLoanPool.address, 1000000000);
     await trader.deployed();
-    console.log(`Trader deployed to:", ${trader.address}\n`);      
+    console.log(`Trader deployed to: ${trader.address}\n`);    
 }
 
 main()
