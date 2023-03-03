@@ -36,24 +36,27 @@ describe('FlashLoan', () => {
     // call depositTokens function from FLP and place 1000000 
     // function depositTokens(uint256 amount) external nonReentrant
     console.log (`Transferring tokens to FlashLoanPool\n`);
-    let accounts, deployer, provider
-     
+    let accounts, deployer     
     accounts = await ethers.getSigners()
-    deployer = accounts[0] 
+    deployer = accounts[0]
 
-    let amount = tokens(1000000)
-
-  
-   // transaction = await token.connect(deployer).flashLoanPool.depositTokens(amount)
-   // await token.connect(deployer).depositTokens(amount)
-    
-    let transaction = await token.connect(deployer).transfer(flashLoanPool.address, amount)
+    let amount = tokens(1000000)    
+    let transaction = await token.connect(deployer).approve(flashLoanPool.address, amount)
     await transaction.wait()
    
-      
-    // await token.flashLoanPool.depositTokens(amount) 
-    console.log(`Transferred Tokens to pool: ${amount}\n`);
+    await flashLoanPool.connect(deployer).depositTokens(amount)
+    await transaction.wait()
 
+    // Balance
+    let balance = await token.balanceOf(flashLoanPool.address)
+    expect(balance).to.equal(amount)
+    console.log(`Transferred Tokens to pool: ${amount}\n`);
+    
+    
+
+    // Call FlashLoan make sure it's working    
+    // function flashLoan(uint256 borrowAmount)   
+        
 
 
     // Deploy Trader contract
