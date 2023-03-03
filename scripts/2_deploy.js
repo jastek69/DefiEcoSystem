@@ -10,12 +10,12 @@ async function main() {
   const Token = await hre.ethers.getContractFactory('Token')
   
   // Deploy Sobek Token (token 1)
-  let sobek = await Token.deploy('Sobek', 'SOB', '1000000000') // 1 million tokens
+  let sobek = await Token.deploy('Sobek', 'SOB', '1000000000') // 1 Billion tokens
   await sobek.deployed()  
   console.log(`Sobek Token deployed to: ${sobek.address}\n`)
 
   // Deploy Token 2
-  const usd = await Token.deploy('USD Token', 'USD', '1000000000') // 1 million tokens
+  const usd = await Token.deploy('USD Token', 'USD', '1000000000') // 1 Billion tokens
   await usd.deployed()  
   console.log(`USD Token deployed to: ${usd.address}\n`)
 

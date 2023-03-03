@@ -22,10 +22,10 @@ const shares = ether
 
 
     
-    
+ 
     
 // QUESTIONS:
-//Should I place all tests here or create another DES test file
+// Should I place all tests here or create another DES test file
 // explain describe
 // When to use beforeEach(async () => {  })
 // 
@@ -56,7 +56,7 @@ const shares = ether
 
         console.log(`Executing Flashloan...\n`)
 
-        let transaction = await FlashLoanPool.connect(account).flashLoan(amount)
+        let transaction = await FlashLoanPool.connect(account).flashLoan(amount) // flashLoan(pool, amount, SOB) 
         const result = await transaction.wait()
 
         console.log(`Transaction Successful!\n`)

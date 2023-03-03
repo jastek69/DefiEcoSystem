@@ -141,7 +141,7 @@ describe('Token', () => {
         expect(await token.balanceOf(receiver.address)).to.be.equal(amount)
       })
 
-      it('rests the allowance', async () => {
+      it('resets the allowance', async () => {
         expect(await token.allowance(deployer.address, exchange.address)).to.be.equal(0)
       })
 
