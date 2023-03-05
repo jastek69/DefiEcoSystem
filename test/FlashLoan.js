@@ -15,8 +15,8 @@ describe('FlashLoan', () => {
     // [X] Deploy token
     // [X] Deploy FLP
     // [X] transfer tokens to FLP
-    // [] Deploy trader contract
-    // [] Fetch accounts from ethers js library ()getSigners
+    // [X] Deploy trader contract
+    // [X] Fetch accounts from ethers js library ()getSigners
     // [] Call Flashloan function on the Trader contract and make sure it works
 
     // Deploy Token
@@ -56,45 +56,13 @@ describe('FlashLoan', () => {
     console.log(`Transferred Tokens to pool: ${amount}\n`);
     
     
-
-    // Call FlashLoan make sure it's working    
-    // function flashLoan(uint256 borrowAmount)
-    console.log(`Calling Flashloan`);
-    
-    
-    // transaction = await token.connect(borrower).approve(flashLoanPool.address, borrowAmount)
-    // await transaction.wait()
-    await flashLoanPool.connect(borrower).flashLoan(borrowAmount);
-    let balance = await token.balanceOf(borrower.address)
-    
-    // transaction = await token.connect(deployer).approve(flashLoanPool.address, borrowAmount)
-    // await transaction.wait()
-    // await flashLoanPool.connect(deployer).flashLoan(borrowAmount);
-    // let balance = await token.balanceOf(deployer.address)
-
-    
-    
-
-
-    expect(balance).to.equal(borrowAmount)
-  
-    console.log(`Executed Flashloan: ${amount}\n`);
-        
-
-
     // Deploy Trader contract
-    // const Trader = await ethers.getContractFactory('Trader')
-    // let trader = await Trader.deploy()    
-    // trade = await ethers.getSigners()
-    // deployer = trade[0]
-    // await token1.approve(trader.address, tokens(1000000))   
-    //  let deployer 
+    console.log(`Deploying Trader contract...\n`)
+    const Trader = await ethers.getContractFactory("Trader")    
+    const trader = await Trader.deploy(token.address, deployer.address, borrowAmount)
+    await trader.deployed()
+    console.log(`Trader deployed to: ${trader.address}\n`);
 
-
-    // Fetch accounts from ethers js library
-    // accounts = await ethers.getSigners()
-    // deployer = accounts[0] 
-            
   })          
 
 })
