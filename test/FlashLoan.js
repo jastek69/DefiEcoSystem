@@ -19,6 +19,8 @@ describe('FlashLoan', () => {
     // [X] Fetch accounts from ethers js library ()getSigners
     // [] Call Flashloan function on the Trader contract and make sure it works
 
+    
+
     // Deploy Token
     const Token = await ethers.getContractFactory('Token')
     let token = await Token.deploy('SOB Token', 'SOB', tokens('1000000000')) // Deploy 1 Billion tokens
@@ -33,8 +35,7 @@ describe('FlashLoan', () => {
 
 
     // Transfer tokens to FlashLoanPool
-    // call depositTokens function from FLP and place 1000000 
-    // function depositTokens(uint256 amount) external nonReentrant
+    // call depositTokens function from FLP and place 1000000 tokens    
     console.log (`Transferring tokens to FlashLoanPool\n`);
     let accounts, deployer, borrower   
     accounts = await ethers.getSigners()
@@ -59,37 +60,18 @@ describe('FlashLoan', () => {
     // Deploy Trader contract
     console.log(`Deploying Trader contract...\n`)
     const Trader = await ethers.getContractFactory("Trader")
-
-    // constructor(address _token1, address _flashLoanPoolAddress, uint256 _borrowAmount) 
     const trader = await Trader.deploy(token.address, flashLoanPool.address, borrowAmount)
     await trader.deployed()
     console.log(`Trader deployed to: ${trader.address}\n`);
     
-    // Call FlashLoan make sure it's working    
-    // function flashLoan(uint256 borrowAmount)
+
+    // Call FlashLoan    
     console.log(`Calling Flashloan`);   
-    
-    
-   // await flashLoanPool.connect(borrower).flashLoan(borrowAmount); // gives ERROR ln 46
-   
     await token.connect(borrower).approve(trader.address, borrowAmount);  
     await trader.connect(borrower).flashLoan(borrowAmount);
-    
-   // let decimals = 18;  
+         
     let balance = await token.balanceOf(trader.address);
     expect(balance).to.equal(borrowAmount)
-   // expect(balance).to.equal(borrowAmount * (10**decimals));
-    
-    console.log(`FlashLoan sent Tokens: ${ethers.utils.formatEther(borrowAmount)}\n`);
-
-    // await flashLoanPool.connect(deployer).flashLoan(borrowAmount);
-    // let balance = await token.balanceOf(deployer.address)
-
-    // expect(balance).to.equal(borrowAmount)
-  
-    // console.log(`Executed Flashloan: ${amount}\n`);
-        
-
-  })          
-
+    console.log(`FlashLoan sent Tokens: ${ethers.utils.formatEther(borrowAmount)}\n`);    
+  })
 })

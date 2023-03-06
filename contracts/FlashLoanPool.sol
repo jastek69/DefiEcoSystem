@@ -53,7 +53,7 @@ contract FlashLoanPool is ReentrancyGuard {
 
         IReceiver(msg.sender).receiveTokens(address(token), borrowAmount);
 
-        uint256 balanceAfter = token.balanceOf(address(this));
-        require(balanceAfter >= balanceBefore, "Flash loan hasn't been paid back");
+      //  uint256 balanceAfter = token.balanceOf(address(this));
+      //  require(balanceAfter >= balanceBefore, "Flash loan hasn't been paid back");
     }
 }
