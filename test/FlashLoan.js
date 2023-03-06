@@ -42,7 +42,7 @@ describe('FlashLoan', () => {
     borrower = accounts[1]
     
 
-    let amount = tokens(10000000)
+    let amount = tokens(1000000000)
     let borrowAmount = tokens(1000000)
     let transaction = await token.connect(deployer).approve(flashLoanPool.address, amount)
     await transaction.wait()
@@ -58,29 +58,27 @@ describe('FlashLoan', () => {
     
     // Deploy Trader contract
     console.log(`Deploying Trader contract...\n`)
-    const Trader = await ethers.getContractFactory("Trader")    
-    const trader = await Trader.deploy(token.address, deployer.address, borrowAmount)
+    const Trader = await ethers.getContractFactory("Trader")
+
+    // constructor(address _token1, address _flashLoanPoolAddress, uint256 _borrowAmount) 
+    const trader = await Trader.deploy(token.address, flashLoanPool.address, borrowAmount)
     await trader.deployed()
     console.log(`Trader deployed to: ${trader.address}\n`);
-
-
     
     // Call FlashLoan make sure it's working    
     // function flashLoan(uint256 borrowAmount)
-    console.log(`Calling Flashloan`);    
+    console.log(`Calling Flashloan`);   
     
     
-    
-    // await flashLoanPool.connect(borrower).flashLoan(borrowAmount); gives ERROR ln 46
+   // await flashLoanPool.connect(borrower).flashLoan(borrowAmount); // gives ERROR ln 46
    
     await token.connect(borrower).approve(trader.address, borrowAmount);  
-    await trader.connect(borrower).flashLoan(borrowAmount)  // gives error ln 30
-
-   
+    await trader.connect(borrower).flashLoan(borrowAmount);
     
-   
-    let balance = await token.balanceOf(deployer.address);
-    expect(balance).to.equal(borrowAmount);
+   // let decimals = 18;  
+    let balance = await token.balanceOf(trader.address);
+    expect(balance).to.equal(borrowAmount)
+   // expect(balance).to.equal(borrowAmount * (10**decimals));
     
     console.log(`FlashLoan sent Tokens: ${ethers.utils.formatEther(borrowAmount)}\n`);
 
@@ -89,8 +87,8 @@ describe('FlashLoan', () => {
 
     // expect(balance).to.equal(borrowAmount)
   
-    // console.log(`Executed Flashloan: ${amount}\n`);    
-            
+    // console.log(`Executed Flashloan: ${amount}\n`);
+        
 
   })          
 
