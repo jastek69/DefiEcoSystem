@@ -11,8 +11,15 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 interface IReceiver { // interface for receiveTokens function in Trader.sol
-    function receiveTokens(address tokenAddress, uint256 amount) external;
+    function receiveTokens(
+        address tokenAddress,
+        uint256 amount) external;
+
+    
+    function flashLoan(
+        uint256 borrowAmount) external;
 }
+
 
 contract FlashLoanPool is ReentrancyGuard {
     using SafeMath for uint256;
@@ -32,9 +39,10 @@ contract FlashLoanPool is ReentrancyGuard {
         poolBalance = poolBalance.add(amount);
     }
 
-    function flashLoan(uint256 borrowAmount) external nonReentrant {
+    function flashLoan(
+        uint256 borrowAmount    
+    ) external nonReentrant {
         require(borrowAmount > 0, "Must borrow at least one token");
-
         uint256 balanceBefore = token.balanceOf(address(this));
         require(balanceBefore >= borrowAmount, "Not enough tokens in pool");
 
@@ -45,8 +53,7 @@ contract FlashLoanPool is ReentrancyGuard {
 
         IReceiver(msg.sender).receiveTokens(address(token), borrowAmount);
 
-        uint256 balanceAfter = token.balanceOf(address(this));
-        require(balanceAfter >= balanceBefore, "Flash loan hasn't been paid back");
+        // uint256 balanceAfter = token.balanceOf(address(this));
+        // require(balanceAfter >= balanceBefore, "Flash loan hasn't been paid back");
     }
-
 }

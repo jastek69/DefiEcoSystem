@@ -63,6 +63,35 @@ describe('FlashLoan', () => {
     await trader.deployed()
     console.log(`Trader deployed to: ${trader.address}\n`);
 
+
+    
+    // Call FlashLoan make sure it's working    
+    // function flashLoan(uint256 borrowAmount)
+    console.log(`Calling Flashloan`);    
+    
+    
+    
+    // await flashLoanPool.connect(borrower).flashLoan(borrowAmount); gives ERROR ln 46
+   
+    await token.connect(borrower).approve(trader.address, borrowAmount);  
+    await trader.connect(borrower).flashLoan(borrowAmount)  // gives error ln 30
+
+   
+    
+   
+    let balance = await token.balanceOf(deployer.address);
+    expect(balance).to.equal(borrowAmount);
+    
+    console.log(`FlashLoan sent Tokens: ${ethers.utils.formatEther(borrowAmount)}\n`);
+
+    // await flashLoanPool.connect(deployer).flashLoan(borrowAmount);
+    // let balance = await token.balanceOf(deployer.address)
+
+    // expect(balance).to.equal(borrowAmount)
+  
+    // console.log(`Executed Flashloan: ${amount}\n`);    
+            
+
   })          
 
 })
