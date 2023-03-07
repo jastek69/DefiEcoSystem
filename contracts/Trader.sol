@@ -24,21 +24,23 @@ contract Trader {
         borrowAmount = _borrowAmount;
     }     
     
-    // call FLP similar to IReceiver(msg.sender).receiveTokens(address(token), borrowAmount);
-    // will be Public
     function flashLoan(uint256 _borrowAmount) public {       
         FlashLoanPool(flashLoanPoolAddress).flashLoan(_borrowAmount);
     }  
 
-    // NOTES
-    // same as FLP receive function - see above
-    // will be Public
+    // same as FLP receive function
     function receiveTokens(address _token1, uint256 _borrowAmount) public payable {
-    console.log('Loan Received', _token1, _borrowAmount);
+    console.log('Loan Received', _token1, _borrowAmount);        
+    }
+
+    // do something with the money 
     
-    // track balance = await token1.balanceOf(token1.address);
-        
-    // do something with the money   
-    
+    // Return Funds
+    function returnFlashLoan(address _token1, uint256 _borrowAmount) public payable {
+        console.log('Loan Paid Back', _token1, _borrowAmount);
+
+    // IReceiver(token1).transfer(flashLoanPoolAddress, borrowAmount);
+
     }
 }
+

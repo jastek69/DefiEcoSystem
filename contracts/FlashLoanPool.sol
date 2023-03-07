@@ -18,6 +18,11 @@ interface IReceiver { // interface for receiveTokens function in Trader.sol
     
     function flashLoan(
         uint256 borrowAmount) external;
+
+
+    function returnFlashLoan(
+        address tokenAddress,
+        uint256 borrowAmount) external;    
 }
 
 
@@ -54,7 +59,7 @@ contract FlashLoanPool is ReentrancyGuard {
         IReceiver(msg.sender).receiveTokens(address(token), borrowAmount);
     }
 
-        // Payback FlashLoan
+    // Payback FlashLoan
     function returnFlashLoan(uint256 borrowAmount) external nonReentrant {
         uint256 balanceBefore = token.balanceOf(address(this));
 
@@ -67,23 +72,3 @@ contract FlashLoanPool is ReentrancyGuard {
      require(balanceAfter >= balanceBefore, "Flash loan hasn't been paid back");
     }
 }
-
-
-
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // function flashLoanCallBack(
-    //     address sender,
-    //     uint256,
-    //     uint256,
-    //     bytes calldata data
-    // ) internal {
-    //     (address FlashLoanPool, address token, uint256 borrowAmount) = abi.decode(data, address, address, uint256));
-
-    //     require(
-    //         sender == address(this) && msg.sender == FlashLoanPool,"
-    //         "HANDLE_FLASH_DENIED"
-    //     );
-    // }
-    ///////////////////////////////////////////////////////////////////////////////////////
-
