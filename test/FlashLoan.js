@@ -17,9 +17,9 @@ describe('FlashLoan', () => {
     // [X] transfer tokens to FLP
     // [X] Deploy trader contract
     // [X] Fetch accounts from ethers js library ()getSigners
-    // [] Call Flashloan function on the Trader contract and make sure it works
+    // [X] Call Flashloan function on the Trader contract and make sure it works
 
-    
+
 
     // Deploy Token
     const Token = await ethers.getContractFactory('Token')
@@ -51,7 +51,7 @@ describe('FlashLoan', () => {
     await flashLoanPool.connect(deployer).depositTokens(amount)
     await transaction.wait()
 
-    // Balance
+    // LoanPool Balance
     let poolBalance = await token.balanceOf(flashLoanPool.address)
     expect(poolBalance).to.equal(amount)
     console.log(`Transferred Tokens to pool: ${amount}\n`);
@@ -72,6 +72,14 @@ describe('FlashLoan', () => {
          
     let balance = await token.balanceOf(trader.address);
     expect(balance).to.equal(borrowAmount)
-    console.log(`FlashLoan sent Tokens: ${ethers.utils.formatEther(borrowAmount)}\n`);    
+    console.log(`FlashLoan sent Tokens: ${ethers.utils.formatEther(borrowAmount)}\n`);
+
+    // LoanPool Balance
+    // console.log(`Paying Back FlashLoan`);
+    // poolBalance = await token.balanceOf(flashLoanPool.address)
+    // expect(poolBalance).to.equal(amount)
+    // console.log(`Transferred Tokens to pool: ${amount}\n`);
+
+
   })
 })

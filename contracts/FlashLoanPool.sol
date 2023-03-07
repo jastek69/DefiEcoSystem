@@ -40,7 +40,7 @@ contract FlashLoanPool is ReentrancyGuard {
     }
 
     function flashLoan(
-        uint256 borrowAmount    
+        uint256 borrowAmount
     ) external nonReentrant {
         require(borrowAmount > 0, "Must borrow at least one token");
         uint256 balanceBefore = token.balanceOf(address(this));
@@ -52,8 +52,38 @@ contract FlashLoanPool is ReentrancyGuard {
         token.transfer(msg.sender, borrowAmount);
 
         IReceiver(msg.sender).receiveTokens(address(token), borrowAmount);
+    }
 
-      //  uint256 balanceAfter = token.balanceOf(address(this));
-      //  require(balanceAfter >= balanceBefore, "Flash loan hasn't been paid back");
+        // Payback FlashLoan
+    function returnFlashLoan(uint256 borrowAmount) external nonReentrant {
+        uint256 balanceBefore = token.balanceOf(address(this));
+
+        // Transfer token 
+        token.transferFrom(msg.sender, address(this), borrowAmount);
+        poolBalance = poolBalance.add(borrowAmount);
+    
+    
+     uint256 balanceAfter = token.balanceOf(address(this));
+     require(balanceAfter >= balanceBefore, "Flash loan hasn't been paid back");
     }
 }
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // function flashLoanCallBack(
+    //     address sender,
+    //     uint256,
+    //     uint256,
+    //     bytes calldata data
+    // ) internal {
+    //     (address FlashLoanPool, address token, uint256 borrowAmount) = abi.decode(data, address, address, uint256));
+
+    //     require(
+    //         sender == address(this) && msg.sender == FlashLoanPool,"
+    //         "HANDLE_FLASH_DENIED"
+    //     );
+    // }
+    ///////////////////////////////////////////////////////////////////////////////////////
+
