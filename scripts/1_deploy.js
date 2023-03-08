@@ -23,7 +23,7 @@ async function main() {
 
     // Deploy Trader contract
     const Trader = await ethers.getContractFactory("Trader");
-    const trader = await Trader.deploy(sobek.address, flashLoanPool.address, 1000000000);
+    const trader = await Trader.deploy(sobek.address, flashLoanPool.address);
     await trader.deployed();
     console.log(`Trader deployed to: ${trader.address}\n`);    
 }

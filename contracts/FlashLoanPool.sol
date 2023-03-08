@@ -14,15 +14,9 @@ interface IReceiver { // interface for receiveTokens function in Trader.sol
     function receiveTokens(
         address tokenAddress,
         uint256 amount) external;
-
     
     function flashLoan(
-        uint256 borrowAmount) external;
-
-
-    function returnFlashLoan(
-        address tokenAddress,
-        uint256 borrowAmount) external;    
+        uint256 borrowAmount) external;       
 }
 
 
@@ -59,8 +53,7 @@ contract FlashLoanPool is ReentrancyGuard {
         IReceiver(msg.sender).receiveTokens(address(token), borrowAmount);
     
 
-    // Payback FlashLoan
-    // Loan is manually paid back - maunally payback loan 
+    // FlashLoan is maunally paid back 
       uint256 balanceAfter = token.balanceOf(address(this));
       require(balanceAfter >= balanceBefore, "Flash loan hasn't been paid back");
      

@@ -18,7 +18,7 @@ describe('FlashLoan', () => {
     // [X] Deploy trader contract
     // [X] Fetch accounts from ethers js library ()getSigners
     // [X] Call Flashloan function on the Trader contract and make sure it works
-    // [] Payback FlashLoan
+    // [X] Payback FlashLoan
 
 
     // Deploy Token
@@ -60,7 +60,7 @@ describe('FlashLoan', () => {
     // Deploy Trader contract
     console.log(`Deploying Trader contract...\n`)
     const Trader = await ethers.getContractFactory("Trader")
-    const trader = await Trader.deploy(token.address, flashLoanPool.address, borrowAmount)
+    const trader = await Trader.deploy(token.address, flashLoanPool.address)
     await trader.deployed()
     console.log(`Trader deployed to: ${trader.address}\n`);
     
@@ -68,19 +68,26 @@ describe('FlashLoan', () => {
     // Call FlashLoan    
     console.log(`Calling Flashloan`);   
     await token.connect(borrower).approve(trader.address, borrowAmount);  
-    await trader.connect(borrower).flashLoan(borrowAmount);
+    transaction = await trader.connect(borrower).flashLoan(borrowAmount);
+    await transaction.wait()
          
     // let balance = await token.balanceOf(trader.address);
     // expect(balance).to.equal(borrowAmount)
     // console.log(`FlashLoan sent Tokens: ${ethers.utils.formatEther(borrowAmount)}\n`);
     // console.log(`FlashLoan Pool balance: ${ethers.utils.formatEther(amount)}\n`);
     // Now use Emit Event to confirm loan payment 
-    
+    await expect(transaction).to.emit(trader, 'Loan').withArgs(
+      borrower.address,         
+      token.address,   
+      borrowAmount(1),        
+      flashLoanPool.address
+  )
+
     // Check Payback Loan
     
 
 
-    // Test to make sure if Fails >> implement repay code >> test it pays back >> reactivate require statement
+    // To Test if it Fails comment out repay code and check for require statement
 
     console.log(`Paying Back FlashLoan`);
     poolBalance = await token.balanceOf(flashLoanPool.address)

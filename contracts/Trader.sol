@@ -12,27 +12,27 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract Trader {
     // pass in FLP contract address save to State var - NOTE: must deploy FLP first. Be sure to pass tokens in test
    
-    address flashLoanPoolAddress; // NEED FlashloanPool address
-    uint256 borrowAmount;
+    address flashLoanPoolAddress; // NEED FlashloanPool address   
     address public owner;
     address token1;
 
     // EVENTS
-    // 
-    // event LoanReceived(        
-    //     address token,
-    //     uint256 loanAmount
+   
+    event Loan(
+        address user,         
+        address tokenGive,    
+        uint256 tokenGiveAmount,
+        address flpAddress       
         
-    // );
+     );
     
-    constructor(address _token1, address _flashLoanPoolAddress, uint256 _borrowAmount) payable {
+    constructor(address _token1, address _flashLoanPoolAddress) payable {
         owner = msg.sender;
         token1 = _token1;
-        flashLoanPoolAddress = _flashLoanPoolAddress;
-        borrowAmount = _borrowAmount;
+        flashLoanPoolAddress = _flashLoanPoolAddress;       
     }     
     
-    function flashLoan(uint256 _borrowAmount) public {       
+    function flashLoan(uint256 _borrowAmount) public {
         FlashLoanPool(flashLoanPoolAddress).flashLoan(_borrowAmount);
     }  
 
@@ -40,11 +40,18 @@ contract Trader {
     function receiveTokens(address _token1, uint256 _borrowAmount) public payable {
     console.log('Loan Received (in wei)', _token1, _borrowAmount);
 
+     emit Loan(
+        msg.sender,             // user         
+        address(token1),        // tokenGive,
+        _borrowAmount,         // tokenGiveAmount
+        flashLoanPoolAddress    // flpAddress  
+    );
+
     // Emit event to prove tokens receive in test
     //    emit LoanReceived(token1, borrowAmount);
     
     // Return all tokens to the Pool - 
-        require(Token(token1).transfer(msg.sender, _borrowAmount), "Transfer of tokens failed"); 
+        require(Token(token1).transfer(msg.sender, _borrowAmount), "Transfer of tokens failed");
 
 
     // do something with the money   
