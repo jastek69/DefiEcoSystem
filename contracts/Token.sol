@@ -6,7 +6,7 @@ import "hardhat/console.sol";
 contract Token {
     string public name;
     string public symbol;
-    uint256 public decimals = 18;
+    uint256 public decimals = 18; // ERC 20 Standard requirement
     uint256 public totalSupply;
 
     mapping(address => uint256) public balanceOf;
@@ -31,7 +31,7 @@ contract Token {
     ) {
         name = _name;
         symbol = _symbol;
-        totalSupply = _totalSupply * (10**decimals);
+        totalSupply = _totalSupply;        
         balanceOf[msg.sender] = totalSupply;
     }
 

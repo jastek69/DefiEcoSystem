@@ -16,6 +16,14 @@ contract Trader {
     uint256 borrowAmount;
     address public owner;
     address token1;
+
+    // EVENTS
+    // 
+    // event LoanReceived(        
+    //     address token,
+    //     uint256 loanAmount
+        
+    // );
     
     constructor(address _token1, address _flashLoanPoolAddress, uint256 _borrowAmount) payable {
         owner = msg.sender;
@@ -30,17 +38,16 @@ contract Trader {
 
     // same as FLP receive function
     function receiveTokens(address _token1, uint256 _borrowAmount) public payable {
-    console.log('Loan Received', _token1, _borrowAmount);        
-    }
+    console.log('Loan Received (in wei)', _token1, _borrowAmount);
 
-    // do something with the money 
+    // Emit event to prove tokens receive in test
+    //    emit LoanReceived(token1, borrowAmount);
     
-    // Return Funds
-    function returnFlashLoan(address _token1, uint256 _borrowAmount) public payable {
-        console.log('Loan Paid Back', _token1, _borrowAmount);
+    // Return all tokens to the Pool - 
+        require(Token(token1).transfer(msg.sender, _borrowAmount), "Transfer of tokens failed"); 
 
-    // IReceiver(token1).transfer(flashLoanPoolAddress, borrowAmount);
+
+    // do something with the money   
 
     }
 }
-

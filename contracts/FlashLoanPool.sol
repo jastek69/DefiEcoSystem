@@ -57,18 +57,12 @@ contract FlashLoanPool is ReentrancyGuard {
         token.transfer(msg.sender, borrowAmount);
 
         IReceiver(msg.sender).receiveTokens(address(token), borrowAmount);
-    }
+    
 
     // Payback FlashLoan
-    function returnFlashLoan(uint256 borrowAmount) external nonReentrant {
-        uint256 balanceBefore = token.balanceOf(address(this));
-
-        // Transfer token 
-        token.transferFrom(msg.sender, address(this), borrowAmount);
-        poolBalance = poolBalance.add(borrowAmount);
-    
-    
-     uint256 balanceAfter = token.balanceOf(address(this));
-     require(balanceAfter >= balanceBefore, "Flash loan hasn't been paid back");
+    // Loan is manually paid back - maunally payback loan 
+      uint256 balanceAfter = token.balanceOf(address(this));
+      require(balanceAfter >= balanceBefore, "Flash loan hasn't been paid back");
+     
     }
 }

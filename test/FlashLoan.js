@@ -54,7 +54,7 @@ describe('FlashLoan', () => {
     // LoanPool Balance
     let poolBalance = await token.balanceOf(flashLoanPool.address)
     expect(poolBalance).to.equal(amount)
-    console.log(`Transferred Tokens to pool: ${amount}\n`);
+    console.log(`Transferred Tokens to pool (in wei): ${amount}\n`);
     
     
     // Deploy Trader contract
@@ -70,12 +70,18 @@ describe('FlashLoan', () => {
     await token.connect(borrower).approve(trader.address, borrowAmount);  
     await trader.connect(borrower).flashLoan(borrowAmount);
          
-    let balance = await token.balanceOf(trader.address);
-    expect(balance).to.equal(borrowAmount)
-    console.log(`FlashLoan sent Tokens: ${ethers.utils.formatEther(borrowAmount)}\n`);
+    // let balance = await token.balanceOf(trader.address);
+    // expect(balance).to.equal(borrowAmount)
+    // console.log(`FlashLoan sent Tokens: ${ethers.utils.formatEther(borrowAmount)}\n`);
+    // console.log(`FlashLoan Pool balance: ${ethers.utils.formatEther(amount)}\n`);
+    // Now use Emit Event to confirm loan payment 
+    
+    // Check Payback Loan
+    
 
-   
-    //Payback Loan
+
+    // Test to make sure if Fails >> implement repay code >> test it pays back >> reactivate require statement
+
     console.log(`Paying Back FlashLoan`);
     poolBalance = await token.balanceOf(flashLoanPool.address)
     expect(poolBalance).to.equal(amount)
