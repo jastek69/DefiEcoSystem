@@ -18,12 +18,9 @@ contract Trader {
 
     // EVENTS
    
-    event Loan(
-        address user,         
+    event Loan(            
         address tokenGive,    
-        uint256 tokenGiveAmount,
-        address flpAddress       
-        
+        uint256 tokenGiveAmount      
      );
     
     constructor(address _token1, address _flashLoanPoolAddress) payable {
@@ -40,16 +37,12 @@ contract Trader {
     function receiveTokens(address _token1, uint256 _borrowAmount) public payable {
     console.log('Loan Received (in wei)', _token1, _borrowAmount);
 
-     emit Loan(
-        msg.sender,             // user         
-        address(token1),        // tokenGive,
-        _borrowAmount,         // tokenGiveAmount
-        flashLoanPoolAddress    // flpAddress  
+     emit Loan(             // Emit event to prove tokens receive in test     
+        address(token1),    // tokenGive,
+        _borrowAmount      // tokenGiveAmount       
     );
 
-    // Emit event to prove tokens receive in test
-    //    emit LoanReceived(token1, borrowAmount);
-    
+        
     // Return all tokens to the Pool - 
         require(Token(token1).transfer(msg.sender, _borrowAmount), "Transfer of tokens failed");
 

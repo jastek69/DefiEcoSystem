@@ -12,6 +12,8 @@ describe('FlashLoan', () => {
  
   it('Borrowing 1M SOB and throws revert info msg.', async () => {
 
+    ////////////////////////////////////////////////////////////////////////////////
+    // Test will do the following:
     // [X] Deploy token
     // [X] Deploy FLP
     // [X] transfer tokens to FLP
@@ -19,6 +21,7 @@ describe('FlashLoan', () => {
     // [X] Fetch accounts from ethers js library ()getSigners
     // [X] Call Flashloan function on the Trader contract and make sure it works
     // [X] Payback FlashLoan
+    /////////////////////////////////////////////////////////////////////////////////
 
 
     // Deploy Token
@@ -66,34 +69,32 @@ describe('FlashLoan', () => {
     
 
     // Call FlashLoan    
-    console.log(`Calling Flashloan`);   
+    console.log(`Calling Flashloan`);
     await token.connect(borrower).approve(trader.address, borrowAmount);  
     transaction = await trader.connect(borrower).flashLoan(borrowAmount);
     await transaction.wait()
-         
+     
+    // Remove loan payback to test:
     // let balance = await token.balanceOf(trader.address);
     // expect(balance).to.equal(borrowAmount)
     // console.log(`FlashLoan sent Tokens: ${ethers.utils.formatEther(borrowAmount)}\n`);
     // console.log(`FlashLoan Pool balance: ${ethers.utils.formatEther(amount)}\n`);
-    // Now use Emit Event to confirm loan payment 
-    await expect(transaction).to.emit(trader, 'Loan').withArgs(
-      borrower.address,         
-      token.address,   
-      borrowAmount(1),        
-      flashLoanPool.address
-  )
-
-    // Check Payback Loan
     
+    // Use Emit Event to confirm loan payment
+    await expect(transaction).to.emit(trader, 'Loan').withArgs( 
+      token.address,   
+      borrowAmount   
+      )     
 
 
-    // To Test if it Fails comment out repay code and check for require statement
+    // NOTE: To Test if it Fails comment out repay code and check for require statement
 
+    
+    // Check Payback Loan
     console.log(`Paying Back FlashLoan`);
     poolBalance = await token.balanceOf(flashLoanPool.address)
     expect(poolBalance).to.equal(amount)
     console.log(`Transferred Tokens to pool: ${amount}\n`);
-
 
   })
 })
