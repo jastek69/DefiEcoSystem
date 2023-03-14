@@ -91,14 +91,6 @@ describe('FlashLoan', () => {
 
     // NOTE: To Test if it Fails comment out repay code and check for require statement
 
-    
-    // Check Payback Loan
-    console.log(`Paying Back FlashLoan`);
-    poolBalance = await token.balanceOf(flashLoanPool.address)
-    expect(poolBalance).to.equal(amount)
-    console.log(`Transferred Tokens to pool: ${amount}\n`);
-
-
     // Execute Trade
     const AMM1 = await ethers.getContractFactory('AMM1')
     let amm1 = await AMM1.deploy(token1.address, token2.address)  
@@ -106,10 +98,19 @@ describe('FlashLoan', () => {
     const AMM2 = await ethers.getContractFactory('AMM2')
     let amm2 = await AMM2.deploy(token1.address, token2.address)
 
-    let buyAmount = tokens(1000)
+    let buyAmount = tokens(borrowAmount)
     let liquidityProvider = accounts[3]
     transaction = await token1.connect(liquidityProvider).approve(amm2.address, buyAmount)
     await transaction.wait()
+
+
+
+    // Check Payback Loan
+    console.log(`Paying Back FlashLoan`);
+    poolBalance = await token.balanceOf(flashLoanPool.address)
+    expect(poolBalance).to.equal(amount)
+    console.log(`Transferred Tokens to pool: ${amount}\n`);
+    
 
   })
 })

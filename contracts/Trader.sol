@@ -90,5 +90,3 @@ contract Trader {
     } 
 
 }
-
-
