@@ -10,7 +10,7 @@ const shares = ether
 
 describe('FlashLoan', () => {  
  
-  it('Borrowing 1M SOB and throws revert info msg.', async () => {
+  it('Borrowing 1M USD and throws revert info msg.', async () => {
 
     ////////////////////////////////////////////////////////////////////////////////
     // Test will do the following:
@@ -26,7 +26,9 @@ describe('FlashLoan', () => {
 
     // Deploy Token
     const Token = await ethers.getContractFactory('Token')
-    let token = await Token.deploy('SOB Token', 'SOB', tokens('1000000000')) // Deploy 1 Billion tokens
+    let token = await Token.deploy('USD Token', 'USD', tokens('1000000000')) // Deploy 1 Billion tokens
+    let token1 = await Token.deploy('USD Token', 'USD', '1000000')
+    let token2 = await Token.deploy('Sobek Token', 'SOB', '500000')
 
     
     // Deploy Flash Loan Pool contract
@@ -38,7 +40,7 @@ describe('FlashLoan', () => {
 
 
     // Transfer tokens to FlashLoanPool
-    // call depositTokens function from FLP and place 1000000 tokens    
+    // call depositTokens function from FLP and place 1000000 tokens
     console.log (`Transferring tokens to FlashLoanPool\n`);
     let accounts, deployer, borrower   
     accounts = await ethers.getSigners()
@@ -83,7 +85,7 @@ describe('FlashLoan', () => {
     // Use Emit Event to confirm loan payment
     await expect(transaction).to.emit(trader, 'Loan').withArgs( 
       token.address,   
-      borrowAmount   
+      borrowAmount
       )     
 
 
@@ -95,6 +97,19 @@ describe('FlashLoan', () => {
     poolBalance = await token.balanceOf(flashLoanPool.address)
     expect(poolBalance).to.equal(amount)
     console.log(`Transferred Tokens to pool: ${amount}\n`);
+
+
+    // Execute Trade
+    const AMM1 = await ethers.getContractFactory('AMM1')
+    let amm1 = await AMM1.deploy(token1.address, token2.address)  
+
+    const AMM2 = await ethers.getContractFactory('AMM2')
+    let amm2 = await AMM2.deploy(token1.address, token2.address)
+
+    let buyAmount = tokens(1000)
+    let liquidityProvider = accounts[3]
+    transaction = await token1.connect(liquidityProvider).approve(amm2.address, buyAmount)
+    await transaction.wait()
 
   })
 })

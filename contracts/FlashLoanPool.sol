@@ -10,13 +10,17 @@ import "./Token.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-interface IReceiver { // interface for receiveTokens function in Trader.sol
+interface IReceiver { // interface for functions in Trader.sol
     function receiveTokens(
         address tokenAddress,
         uint256 amount) external;
     
     function flashLoan(
-        uint256 borrowAmount) external;       
+        uint256 borrowAmount) external;
+
+    function buyTokens(uint256 amount) external;
+
+    function sellTokens(uint256 amount) external;
 }
 
 

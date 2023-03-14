@@ -8,22 +8,22 @@ async function main() {
     console.log(`Deploying token...\n`)
     const Token = await ethers.getContractFactory("Token");
 
-    // Deploy Sobek Token
-    let sobek = await Token.deploy('Sobek', 'SOB', '1000000000') // 1 Billion tokens
-    await sobek.deployed()  
-    console.log(`Sobek Token deployed to: ${sobek.address}\n`)
+    // Deploy USD Token
+    let usd = await Token.deploy('usd', 'USD', '1000000000') // 1 Billion tokens
+    await usd.deployed()  
+    console.log(`USD Token deployed to: ${usd.address}\n`)
 
 
     console.log(`Deploying contracts...\n`)
     // Deploy FLP contract
     const FlashLoanPool = await hre.ethers.getContractFactory("FlashLoanPool")
-    const flashLoanPool = await FlashLoanPool.deploy(sobek.address)
+    const flashLoanPool = await FlashLoanPool.deploy(usd.address)
     await flashLoanPool.deployed()
     console.log(`FlashLoanPool deployed to: ${flashLoanPool.address}\n`);
 
     // Deploy Trader contract
     const Trader = await ethers.getContractFactory("Trader");
-    const trader = await Trader.deploy(sobek.address, flashLoanPool.address);
+    const trader = await Trader.deploy(usd.address, flashLoanPool.address);
     await trader.deployed();
     console.log(`Trader deployed to: ${trader.address}\n`);    
 }

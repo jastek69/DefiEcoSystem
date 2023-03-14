@@ -14,7 +14,7 @@ async function main() {
   await sobek.deployed()  
   console.log(`Sobek Token deployed to: ${sobek.address}\n`)
 
-  // Deploy Token 2
+  // Deploy USD (token 2)
   const usd = await Token.deploy('USD Token', 'USD', '1000000000') // 1 Billion tokens
   await usd.deployed()  
   console.log(`USD Token deployed to: ${usd.address}\n`)
