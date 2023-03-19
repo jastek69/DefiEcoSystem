@@ -30,9 +30,48 @@ describe('FlashLoan', () => {
     let token1 = await Token.deploy('USD Token', 'USD', '1000000')
     let token2 = await Token.deploy('Sobek Token', 'SOB', '500000')
 
+
+    // Deploy AMM1
+    console.log('Deploying AMM \n')
+    const AMM = await ethers.getContractFactory('AMM')
+    let amm1 = await AMM.deploy(token1.address, token2.address)
+
+    describe('Deployment AMM', () => {
+      it('has an address', async () => {
+        expect(amm1.address).to.not.equal(0x0)
+      })    
+  
+      it('tracks token1 address', async () => {
+          expect(await amm1.token1()).to.equal(token1.address)
+      })
+  
+      it('tracks token2 address', async () => {
+          expect(await amm1.token2()).to.equal(token2.address)
+      })  
+    })
+
+    // Deploy AMM2
+    console.log('Deploying AMM2 \n')
+    const AMM2 = await ethers.getContractFactory('AMM2')
+    let amm2 = await AMM2.deploy(token1.address, token2.address)
+    
+
+    describe('Deployment AMM2', () => {
+      it('has an address', async () => {
+        expect(amm2.address).to.not.equal(0x0)
+      })    
+
+      it('tracks token1 address', async () => {
+          expect(await amm2.token1()).to.equal(token1.address)
+      })
+
+      it('tracks token2 address', async () => {
+          expect(await amm2.token2()).to.equal(token2.address)
+      })
+    })
     
     // Deploy Flash Loan Pool contract
-    console.log(`Deploying FlashLoanPool contract...\n`)
+    console.log(`Deploying FlashLoanPool contract...\n`);
     const FlashLoanPool = await ethers.getContractFactory("FlashLoanPool")
     const flashLoanPool = await FlashLoanPool.deploy(token.address)
     await flashLoanPool.deployed()
@@ -65,7 +104,7 @@ describe('FlashLoan', () => {
     // Deploy Trader contract
     console.log(`Deploying Trader contract...\n`)
     const Trader = await ethers.getContractFactory("Trader")
-    const trader = await Trader.deploy(token.address, flashLoanPool.address)
+    const trader = await Trader.deploy(token.address, token1.address, flashLoanPool.address, amm1.address, amm2.address)
     await trader.deployed()
     console.log(`Trader deployed to: ${trader.address}\n`);
     
@@ -88,20 +127,24 @@ describe('FlashLoan', () => {
       borrowAmount
       )     
 
-
     // NOTE: To Test if it Fails comment out repay code and check for require statement
 
+
     // Execute Trade
-    const AMM1 = await ethers.getContractFactory('AMM1')
-    let amm1 = await AMM1.deploy(token1.address, token2.address)  
-
-    const AMM2 = await ethers.getContractFactory('AMM2')
-    let amm2 = await AMM2.deploy(token1.address, token2.address)
-
     let buyAmount = tokens(borrowAmount)
     let liquidityProvider = accounts[3]
     transaction = await token1.connect(liquidityProvider).approve(amm2.address, buyAmount)
     await transaction.wait()
+
+
+    // Describe Arbitrage - only do arb with no flashloan
+    // send tokens to contract in test inside function test line by line
+    console.log(`Calling Arbitrage`);
+    await token2.connect(borrower).approve(trader.address, token1.address, flashLoanPool.address, amm1.address, amm2.address)
+    transaction = await trader.connect(borrower).arbitrage(token1, token2, borrowAmount)
+    await transaction.wait()
+    
+    // get tokens, then approve, then swap
 
 
 
@@ -110,7 +153,6 @@ describe('FlashLoan', () => {
     poolBalance = await token.balanceOf(flashLoanPool.address)
     expect(poolBalance).to.equal(amount)
     console.log(`Transferred Tokens to pool: ${amount}\n`);
-    
 
   })
 })
