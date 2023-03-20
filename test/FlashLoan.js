@@ -133,11 +133,7 @@ describe('FlashLoan', () => {
     // LoanPool Balance
     let poolBalance = await token.balanceOf(flashLoanPool.address)
     expect(poolBalance).to.equal(amount)
-    console.log(`Transferred Tokens to pool (in wei): ${amount}\n`);    
-    
-
-   
-
+    console.log(`Transferred Tokens to pool (in wei): ${amount}\n`); 
 
 
     // Deploy Trader contract
@@ -169,25 +165,7 @@ describe('FlashLoan', () => {
 
     // NOTE: To Test if it Fails comment out repay code and check for require statement
 
-    
-
-    
-
-    
-
-
-    
-
-    
-    
-
-
-
-
-
-
     // Execute Trade
-
     // console.log(`Executing Trade`)
     // let buyAmount = tokens(borrowAmount)
     // let liquidityProvider = accounts[3]
