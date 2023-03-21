@@ -34,9 +34,7 @@ describe('FlashLoan', () => {
     // Deploy Token
     const Token = await ethers.getContractFactory('Token')
       token1 = await Token.deploy('USD Token', 'USD', tokens('1000000000')) // Deploy 1 Billion tokens
-     // token1 = await Token.deploy('USD Token', 'USD', tokens('1000000'))
       token2 = await Token.deploy('Sobek Token', 'SOB', tokens('1000000000'))
-
     
     // Send tokens to liquidity provider
     let transaction = await token1.connect(deployer).transfer(liquidityProvider.address, tokens(10000000)) // NOTE: use 'connect' to connect to a contract
@@ -44,7 +42,6 @@ describe('FlashLoan', () => {
 
     transaction = await token2.connect(deployer).transfer(liquidityProvider.address, tokens(10000000)) // NOTE: "let" already done in first declaration
     await transaction.wait()
-
 
     // Send token1 to investor1
     transaction = await token1.connect(deployer).transfer(investor1.address, tokens(100000))
@@ -55,43 +52,29 @@ describe('FlashLoan', () => {
     await transaction.wait()
 
 
-    // Deploy AMM1
-    console.log('Deploying AMM \n')
+    // Deploy AMM's
+    console.log('Deploying AMM contracts \n')
     const AMM = await ethers.getContractFactory('AMM')
       amm1 = await AMM.deploy(token1.address, token2.address)
+      amm2 = await AMM.deploy(token1.address, token2.address)
 
-    describe('Deployment AMM', () => {
+    describe('Deployment AMM1 and AMM2', () => {
       it('has an address', async () => {
         expect(amm1.address).to.not.equal(0x0)
-      })    
-  
-      it('tracks token1 address', async () => {
-          expect(await amm1.token1()).to.equal(token1.address)
-      })
-  
-      it('tracks token2 address', async () => {
-          expect(await amm1.token2()).to.equal(token2.address)
-      })  
-    })    
-
-    // Deploy AMM2
-    console.log('Deploying AMM2 \n')
-    const AMM2 = await ethers.getContractFactory('AMM2')
-      amm2 = await AMM2.deploy(token1.address, token2.address)
-
-    describe('Deployment AMM2', () => {
-      it('has an address', async () => {
         expect(amm2.address).to.not.equal(0x0)
       })    
-
+  
       it('tracks token1 address', async () => {
-          expect(await amm2.token1()).to.equal(token1.address)
+        expect(await amm1.token1()).to.equal(token1.address)
+        expect(await amm2.token1()).to.equal(token1.address)
       })
-
+  
       it('tracks token2 address', async () => {
-          expect(await amm2.token2()).to.equal(token2.address)
-      })
+        expect(await amm1.token2()).to.equal(token2.address)
+        expect(await amm2.token2()).to.equal(token2.address)
+      })  
     })
+   
 
     // Add Liquidity to AMM1
     let amm1UsdAmount = tokens(1000000)
@@ -119,7 +102,6 @@ describe('FlashLoan', () => {
 
     expect(await amm1.token1Balance()).to.equal(amm1UsdAmount)
     expect(await amm1.token2Balance()).to.equal(amm1SobAmount)
-
 
 
     // Add Liquidity to AMM2
@@ -177,7 +159,7 @@ describe('FlashLoan', () => {
     // Transfer tokens to FlashLoanPool
     // call depositTokens function from FLP and place 1000000 tokens
     console.log (`Transferring tokens to FlashLoanPool\n`);
-    let amount = tokens(1000000000)
+    let amount = tokens(500000000)
     let borrowAmount = tokens(1000000)
     let transaction = await token1.connect(deployer).approve(flashLoanPool.address, amount)
     await transaction.wait()
@@ -189,58 +171,34 @@ describe('FlashLoan', () => {
     let poolBalance = await token1.balanceOf(flashLoanPool.address)
     expect(poolBalance).to.equal(amount)
     console.log(`Transferred Tokens to pool (in wei): ${amount}\n`); 
-
+    console.log(`Flash Loan Pool Balance: ${ethers.utils.formatEther(await flashLoanPool.poolBalance())} \n`)
 
     // Deploy Trader contract
     console.log(`Deploying Trader contract...\n`)
     const Trader = await ethers.getContractFactory("Trader")
     const trader = await Trader.deploy(token1.address, token2.address, flashLoanPool.address, amm1.address, amm2.address)
     await trader.deployed()
-    console.log(`Trader deployed to: ${trader.address}\n`);
-    
+    console.log(`Trader deployed to: ${trader.address}\n`);    
 
     // Call FlashLoan    
     console.log(`Calling Flashloan`);
     await token1.connect(borrower).approve(trader.address, borrowAmount);  
     transaction = await trader.connect(borrower).flashLoan(borrowAmount);
     await transaction.wait()
-     
-    // Remove loan payback to test:
-    // let balance = await token.balanceOf(trader.address);
-    // expect(balance).to.equal(borrowAmount)
-    // console.log(`FlashLoan sent Tokens: ${ethers.utils.formatEther(borrowAmount)}\n`);
-    // console.log(`FlashLoan Pool balance: ${ethers.utils.formatEther(amount)}\n`);
-    
+   
 
     // Use Emit Event to confirm loan payment
     await expect(transaction).to.emit(trader, 'Loan').withArgs( 
       token1.address,   
       borrowAmount
-      )     
-
+      ) 
     // NOTE: To Test if it Fails comment out repay code and check for require statement
 
-    // Execute Trade
-    // console.log(`Executing Trade`)
-    // let buyAmount = tokens(borrowAmount)
-    // let liquidityProvider = accounts[3]
-    // transaction = await token1.connect(liquidityProvider).approve(amm2.address, buyAmount)
-    // await transaction.wait()
-
-    // Describe Arbitrage - only do arb with no flashloan
-    // send tokens to contract in test inside function test line by line
-    // console.log(`Calling Arbitrage`);
-    // await token2.connect(borrower).approve(trader.address, token1.address, flashLoanPool.address, amm1.address, amm2.address)
-    // transaction = await trader.connect(borrower).arbitrage(token1, token2, borrowAmount)
-    // await transaction.wait()
-    
-    // get tokens, then approve, then swap
 
     // Check Payback Loan
     console.log(`Paying Back FlashLoan`);
     poolBalance = await token1.balanceOf(flashLoanPool.address)
     expect(poolBalance).to.equal(amount)
     console.log(`Transferred Tokens to pool: ${amount}\n`);
-
   })
 })
