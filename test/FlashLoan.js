@@ -12,10 +12,11 @@ describe('FlashLoan', () => {
 
   let accounts,
       deployer,
-      borrower,
+      arbitrager,
       liquidityProvider,
       investor1,
       investor2
+      
 
   let token1,
       token2,
@@ -26,15 +27,16 @@ describe('FlashLoan', () => {
   beforeEach(async () => {  
     accounts = await ethers.getSigners()
     deployer = accounts[0]
-    borrower = accounts[1]
+    arbitrager = accounts[1]
     liquidityProvider = accounts[2]
     investor1 = accounts[3]
     investor2 = accounts[4]
+    
 
     // Deploy Token
     const Token = await ethers.getContractFactory('Token')
-      token1 = await Token.deploy('USD Token', 'USD', tokens('1000000000')) // Deploy 1 Billion tokens
-      token2 = await Token.deploy('Sobek Token', 'SOB', tokens('1000000000'))
+      token1 = await Token.deploy('USD Token', 'USD', tokens('10000000000')) // Deploy 1 Billion tokens
+      token2 = await Token.deploy('Sobek Token', 'SOB', tokens('10000000000'))
     
     // Send tokens to liquidity provider
     let transaction = await token1.connect(deployer).transfer(liquidityProvider.address, tokens(10000000)) // NOTE: use 'connect' to connect to a contract
@@ -44,11 +46,11 @@ describe('FlashLoan', () => {
     await transaction.wait()
 
     // Send token1 to investor1
-    transaction = await token1.connect(deployer).transfer(investor1.address, tokens(100000))
+    transaction = await token1.connect(deployer).transfer(investor1.address, tokens(1000000))
     await transaction.wait()
 
     // Send token2 to investor2
-    transaction = await token2.connect(deployer).transfer(investor2.address, tokens(100000))
+    transaction = await token2.connect(deployer).transfer(investor2.address, tokens(1000000))
     await transaction.wait()
 
 
@@ -134,7 +136,7 @@ describe('FlashLoan', () => {
   
   })
  
-  it('Borrowing 1M USD and throws revert info msg.', async () => {
+  it('Borrowing USD and throws revert info msg.', async () => {
 
     ////////////////////////////////////////////////////////////////////////////////
     // Test will do the following:
@@ -160,7 +162,7 @@ describe('FlashLoan', () => {
     // call depositTokens function from FLP and place 1000000 tokens
     console.log (`Transferring tokens to FlashLoanPool\n`);
     let amount = tokens(500000000)
-    let borrowAmount = tokens(1000000)
+    let borrowAmount = tokens(100000)
     let transaction = await token1.connect(deployer).approve(flashLoanPool.address, amount)
     await transaction.wait()
    
@@ -182,9 +184,10 @@ describe('FlashLoan', () => {
 
     // Call FlashLoan    
     console.log(`Calling Flashloan`);
-    await token1.connect(borrower).approve(trader.address, borrowAmount);  
-    transaction = await trader.connect(borrower).flashLoan(borrowAmount);
+    await token1.connect(arbitrager).approve(trader.address, borrowAmount);  
+    transaction = await trader.connect(arbitrager).flashLoan(borrowAmount);
     await transaction.wait()
+    console.log(`Flash Loan tokens: ${ethers.utils.formatEther(await arbitrager.token1Balance())} \n`)
    
 
     // Use Emit Event to confirm loan payment

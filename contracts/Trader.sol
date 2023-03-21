@@ -26,19 +26,7 @@ contract Trader is ReentrancyGuard {
     event Loan(            
         address tokenGive,    
         uint256 tokenGiveAmount      
-     );
-    
-    // Events
-        // emit Buy(
-        //     address(owner),
-        //     _numberOfTokens
-        // );
-
-        // emit Sell(
-        //     address(owner),
-        //     tokensSold
-        // );
-
+     );   
 
     constructor(address _token1, address _token2, address _flashLoanPoolAddress, address _AMM1_ADDRESS, address _AMM2_ADDRESS) payable {
         owner = msg.sender;        
@@ -60,15 +48,12 @@ contract Trader is ReentrancyGuard {
      emit Loan(             // Emit event to prove tokens receive in test     
         address(_flashToken),
         _borrowAmount      // tokenGiveAmount       
-        );
-                
+        ); 
     
     // Do something with the money here - call arbitrage function    
     // Arbitrage here buy on AMM1 and sell on AMM2
-    // TODO: advanced - use script to get prices to change which will call trader contract to buy and sell     
-    
-      // How and what vars to add when calling function here?
-      // 
+    // TODO: advanced - use script to get prices to change which will call trader contract to buy and sell
+      
       arbitrage(token1, token2, _borrowAmount );
 
     
@@ -87,8 +72,7 @@ contract Trader is ReentrancyGuard {
     // Flashloan in USD 
     // Buy Tokens on AMM1: swap Tokens USD for SOB on AMM1 >> buy SOB tokens 
     // Swap/sell Tokens on AMM2: SOB for USD on AMM2
-    // calculate Withdraw amount then removeLiquidity and payback Loan
-    
+    // calculate Withdraw amount then removeLiquidity and payback Loan    
 
     function arbitrage(            
         address _flashToken,
@@ -103,39 +87,7 @@ contract Trader is ReentrancyGuard {
         // take flashtoken and swap on AMM1 for arbtoken
         // Swap USD for SOB tokens
         IERC20(_arbToken).approve(address(AMM1_ADDRESS), arbAmount);        
-        AMM(AMM1_ADDRESS).swapToken2(arbAmount);
-        
-    // Test on each step can remove test after sauccess
-
-        // require(arbAmount > 0, "Must buy at least one token");
-
-
-        // // check balance of arbtoken
-        // uint256 balanceBefore = IERC20.AMM2(token1).balanceOf(address(this));
-        // uint256 balanceAfter = IERC20(arbToken).balanceOf(address(this)) + flashAmount;
-        // require(balanceAfter >= arbAmount, "Not enough tokens to Trade");
-
-
-        // // swap all arbtokens on Amm2 for flashtoken 
-        // // check balance of flashtoken
-        // // Swap SOB tokens for USD
-        // IERC20(arbToken).approve(address(AMM2_ADDRESS), arbAmount);
-        // AMM2_ADDRESS.swapToken1(arbAmount);
-        // uint256 flashBalance = IERC20(flashToken).balanceOf(address(this)); 
-
-
-        // // subtract of flashtoken from flashloan amount to determine profit        
-        // // Calculate Withdraw Amount and then Remove Liquidity on AMM2
-        // uint256 profit = flashBalance - flashAmount;
-        // IERC20(arbToken).approve(address(AMM2_ADDRESS), arbAmount);
-        
-        // uint256 withDrawAmount = AMM2_ADDRESS.calculateWithdrawAmount(profit);
-        // AMM2_ADDRESS.removeLiquidity(withDrawAmount);
-
-        // balanceAfter = IERC20(arbToken).balanceOf(address(this));
-        // require(balanceAfter >= balanceBefore, "Arbitrage was not successful");
-
-        // // payback flashloan        
-        // // send profit to dev/user       
+        AMM(AMM1_ADDRESS).swapToken1(arbAmount);        
+          
     }    
 }
