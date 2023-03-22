@@ -237,12 +237,11 @@ describe('FlashLoan', () => {
     
   // CAll Arb function and test results - check balances make sure values match
   // Test step by step
-    console.log(`Calling Arbitrage function`)
-  //  transaction = await token1.connect(deployer).arbitrage(borrowAmount);
+    console.log(`Calling Arbitrage function`)  
     transaction = await trader.connect(deployer).arbitrage(token1.address, token2.address, borrowAmount);
     await transaction.wait()
     console.log(`Arbitrage done (in wei): ${amount}\n`);
-
+  // check and verify balances
 
       
 
