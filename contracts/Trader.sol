@@ -75,8 +75,8 @@ contract Trader is ReentrancyGuard {
     // calculate Withdraw amount then removeLiquidity and payback Loan    
 
     function arbitrage(            
-        address _flashToken,
-        address _arbToken,       
+        address _flashToken, // USD
+        address _arbToken,   // Sobek Token    
         uint256 _flashAmount            
     ) public  {        // ReentrancyGuard
             
@@ -85,9 +85,7 @@ contract Trader is ReentrancyGuard {
         uint256 arbBalance = IERC20(_arbToken).balanceOf(address(this));
         
         // take flashtoken and swap on AMM1 for arbtoken
-        // Swap USD for SOB tokens
-        IERC20(_arbToken).approve(address(AMM1_ADDRESS), arbAmount);        
-        AMM(AMM1_ADDRESS).swapToken1(arbAmount);        
-          
+        IERC20(_flashToken).approve((AMM1_ADDRESS), arbAmount);        
+        AMM(AMM1_ADDRESS).swapToken1(arbAmount);   // Swap USD for SOB tokens          
     }    
 }
