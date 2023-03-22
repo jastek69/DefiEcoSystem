@@ -184,8 +184,8 @@ describe('FlashLoan', () => {
   //   await trader.deployed()
   //   console.log(`Trader deployed to: ${trader.address}\n`);    
 
-  //   // Call FlashLoan    
-  //   console.log(`Calling Flashloan`);
+  //   // Call Arbitrage    
+  //   console.log(`Calling Arbitrage`);
   //   await token1.connect(arbitrager).approve(trader.address, borrowAmount); // await not needed so how to reformat if at all?    
   //   transaction = await trader.connect(arbitrager).flashLoan(borrowAmount);
   //   await transaction.wait()
@@ -221,7 +221,6 @@ describe('FlashLoan', () => {
    
 
     // Transfer tokens to Trader contract
-
     // call depositTokens function from FLP and place 1000000 tokens
     console.log (`Transferring tokens to Trader \n`);
     let amount = tokens(1000000)
@@ -238,6 +237,12 @@ describe('FlashLoan', () => {
     
   // CAll Arb function and test results - check balances make sure values match
   // Test step by step
+    console.log(`Calling Arbitrage function`)
+  //  transaction = await token1.connect(deployer).arbitrage(borrowAmount);
+    transaction = await trader.connect(deployer).arbitrage(token1.address, token2.address, borrowAmount);
+    await transaction.wait()
+    console.log(`Arbitrage done (in wei): ${amount}\n`);
+
 
       
 
