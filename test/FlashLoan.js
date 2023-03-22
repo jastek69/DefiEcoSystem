@@ -218,7 +218,6 @@ describe('FlashLoan', () => {
     await trader.deployed()
     console.log(`Trader deployed to: ${trader.address}\n`);    
 
-   
 
     // Transfer tokens to Trader contract
     // call depositTokens function from FLP and place 1000000 tokens
@@ -226,8 +225,7 @@ describe('FlashLoan', () => {
     let amount = tokens(1000000)
     let borrowAmount = tokens(100000)
     let transaction = await token1.connect(deployer).transfer(trader.address, amount)
-    await transaction.wait()
-   
+    await transaction.wait()   
      
 
     // LoanPool Balance
@@ -237,33 +235,37 @@ describe('FlashLoan', () => {
     
 
     // Check investor1 balance before swap
-   let balance = await token2.balanceOf(deployer.address)
-   console.log(`Token2 balance before swap: ${ethers.utils.formatEther(balance)}\n`)
+    let balance = await token2.balanceOf(deployer.address)
+    console.log(`Traders Token2 balance before swap: ${ethers.utils.formatEther(balance)}\n`)
 
-  // CAll Arb function and test results - check balances make sure values match
-  // Test step by step
+    // Get current AMM1 Pool Balance 
+    console.log(`AMM1 USD Token Balance before swap: ${ethers.utils.formatEther(await amm1.token1Balance())} \n`)
+    console.log(`AMM1 Sobek Token Balance before swap: ${ethers.utils.formatEther(await amm1.token2Balance())} \n`)
+    
+    // Get current AMM2 Pool Balance 
+    console.log(`AMM2 USD Token Balance before swap: ${ethers.utils.formatEther(await amm2.token1Balance())} \n`)
+    console.log(`AMM2 Sobek Token Balance before swap: ${ethers.utils.formatEther(await amm2.token2Balance())} \n`)
+
+
+    // Call Arb function and test results - check balances make sure values match    
     console.log(`Calling Arbitrage function`)  
     transaction = await trader.connect(deployer).arbitrage(token1.address, token2.address, borrowAmount);
     await transaction.wait()
     console.log(`Arbitrage done (in wei): ${amount}\n`);
   
-  // check and verify balances
-  // LoanPool Balance
-   
-
     // Check balance after swap
     balance = await token2.balanceOf(deployer.address)
     console.log(`Traders Sobek Token balance after swap: ${ethers.utils.formatEther(balance)}\n`)
    
-    // Get current AMM2 Pool Balance 
-    console.log(`AMM2 USD Token Balance: ${ethers.utils.formatEther(await amm2.token1Balance())} \n`)
-    console.log(`AMM2 Sobek Token Balance: ${ethers.utils.formatEther(await amm2.token2Balance())} \n`)
-  
+    
     // Get current AMM1 Pool Balance 
-    console.log(`AMM1 USD Token Balance: ${ethers.utils.formatEther(await amm1.token1Balance())} \n`)
-    console.log(`AMM1 Sobek Token Balance: ${ethers.utils.formatEther(await amm1.token2Balance())} \n`)
-  
-      
+    console.log(`AMM1 USD Token Balance after swap: ${ethers.utils.formatEther(await amm1.token1Balance())} \n`)
+    console.log(`AMM1 Sobek Token Balance after swap: ${ethers.utils.formatEther(await amm1.token2Balance())} \n`)
+
+
+    // Get current AMM2 Pool Balance 
+    console.log(`AMM2 USD Token Balance after swap: ${ethers.utils.formatEther(await amm2.token1Balance())} \n`)
+    console.log(`AMM2 Sobek Token Balance after swap: ${ethers.utils.formatEther(await amm2.token2Balance())} \n`)   
 
     
   })

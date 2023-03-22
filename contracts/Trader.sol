@@ -83,7 +83,7 @@ contract Trader is ReentrancyGuard {
         // track balances of tokens
         uint256 arbAmount = _flashAmount;            
         
-        // take flashtoken and swap on AMM1 for arbtoken
+        // take flashtoken and swap on AMM1 for arbtoken in USD
         IERC20(_flashToken).approve((AMM1_ADDRESS), arbAmount);   
         AMM(AMM1_ADDRESS).swapToken1(arbAmount);   // Swap USD for SOB tokens on AMM1
 
