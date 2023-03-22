@@ -235,14 +235,34 @@ describe('FlashLoan', () => {
     expect(arbBalance).to.equal(amount)
     console.log(`Transferred Tokens to Trader (in wei): ${amount}\n`);
     
+
+    // Check investor1 balance before swap
+   let balance = await token2.balanceOf(deployer.address)
+   console.log(`Token2 balance before swap: ${ethers.utils.formatEther(balance)}\n`)
+
   // CAll Arb function and test results - check balances make sure values match
   // Test step by step
     console.log(`Calling Arbitrage function`)  
     transaction = await trader.connect(deployer).arbitrage(token1.address, token2.address, borrowAmount);
     await transaction.wait()
     console.log(`Arbitrage done (in wei): ${amount}\n`);
+  
   // check and verify balances
+  // LoanPool Balance
+   
 
+    // Check balance after swap
+    balance = await token2.balanceOf(deployer.address)
+    console.log(`Traders Sobek Token balance after swap: ${ethers.utils.formatEther(balance)}\n`)
+   
+    // Get current AMM2 Pool Balance 
+    console.log(`AMM2 USD Token Balance: ${ethers.utils.formatEther(await amm2.token1Balance())} \n`)
+    console.log(`AMM2 Sobek Token Balance: ${ethers.utils.formatEther(await amm2.token2Balance())} \n`)
+  
+    // Get current AMM1 Pool Balance 
+    console.log(`AMM1 USD Token Balance: ${ethers.utils.formatEther(await amm1.token1Balance())} \n`)
+    console.log(`AMM1 Sobek Token Balance: ${ethers.utils.formatEther(await amm1.token2Balance())} \n`)
+  
       
 
     

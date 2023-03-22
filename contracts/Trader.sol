@@ -81,11 +81,15 @@ contract Trader is ReentrancyGuard {
     ) public  {        // ReentrancyGuard
             
         // track balances of tokens
-        uint256 arbAmount = _flashAmount;
-        uint256 arbBalance = IERC20(_arbToken).balanceOf(address(this));
+        uint256 arbAmount = _flashAmount;            
         
         // take flashtoken and swap on AMM1 for arbtoken
-        IERC20(_flashToken).approve((AMM1_ADDRESS), arbAmount);        
-        AMM(AMM1_ADDRESS).swapToken1(arbAmount);   // Swap USD for SOB tokens          
+        IERC20(_flashToken).approve((AMM1_ADDRESS), arbAmount);   
+        AMM(AMM1_ADDRESS).swapToken1(arbAmount);   // Swap USD for SOB tokens on AMM1
+
+        // swap SOB for USD on AMM2
+        uint256 token2Balance = IERC20(token2).balanceOf(address(this));
+        IERC20(token2).approve(AMM2_ADDRESS, token2Balance);
+        AMM(AMM2_ADDRESS).swapToken2(token2Balance);
     }    
 }
