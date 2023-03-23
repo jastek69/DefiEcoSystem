@@ -245,9 +245,15 @@ describe('FlashLoan', () => {
     // Call Arb function and test results - check balances make sure values match    
     console.log(`Calling Arbitrage function`)  
     transaction = await trader.connect(deployer).arbitrage(token1.address, token2.address, borrowAmount);
-  //  transaction = await trader.connect(deployer).flashLoan(borrowAmount);
+  //  transaction = await trader.connect(deployer).flashLoan(borrowAmount); ERROR
     await transaction.wait()
     console.log(`Arbitrage completed: ${ethers.utils.formatEther(amount)}\n`);
+
+    // Use Emit Event to confirm loan payment
+    await expect(transaction).to.emit(trader, 'Loan').withArgs( 
+      token1.address,   
+      borrowAmount
+      ) 
   
     // Check balance after swap
     let balance = await token1.balanceOf(trader.address)
@@ -256,12 +262,6 @@ describe('FlashLoan', () => {
     // Check balance after swap
     let balance2 = await token2.balanceOf(trader.address)
     console.log(`Trader Sobek Token balance after swap: ${ethers.utils.formatEther(balance2)}\n`)
-
-    // Use Emit Event to confirm loan payment
-    await expect(transaction).to.emit(trader, 'Loan').withArgs( 
-      token1.address,   
-      borrowAmount
-      ) 
     
     // NOTE: To Test if payback Fails comment out repay code and check for require statement
     // Check Payback Loan
