@@ -31,11 +31,10 @@ describe('Trader', () => {
     
     // fetch accounts
     accounts = await ethers.getSigners()
-    deployer = accounts[0]
-    arbitrager = accounts[1]
-    liquidityProvider = accounts[2]
-    investor1 = accounts[3]
-    investor2 = accounts[4]
+    arbitrager = accounts[0]    
+    liquidityProvider = accounts[1]
+    investor1 = accounts[2]
+    investor2 = accounts[3]
 
     // deploy tokens
     const Token = await ethers.getContractFactory('Token')
@@ -43,17 +42,17 @@ describe('Trader', () => {
       token2 = await Token.deploy('Sobek Token', 'SOB', tokens('10000000000'))
     
     // Send tokens to liquidity provider
-    let transaction = await token1.connect(deployer).transfer(liquidityProvider.address, tokens(10000000)) // NOTE: use 'connect' to connect to a contract
+    let transaction = await token1.connect(arbitrager).transfer(liquidityProvider.address, tokens(10000000)) // NOTE: use 'connect' to connect to a contract
     await transaction.wait()
-    transaction = await token2.connect(deployer).transfer(liquidityProvider.address, tokens(10000000)) // NOTE: "let" already done in first declaration
+    transaction = await token2.connect(arbitrager).transfer(liquidityProvider.address, tokens(10000000)) // NOTE: "let" already done in first declaration
     await transaction.wait()
 
     // Send token1 to investor1
-    transaction = await token1.connect(deployer).transfer(investor1.address, tokens(1000000))
+    transaction = await token1.connect(arbitrager).transfer(investor1.address, tokens(1000000))
     await transaction.wait()
 
     // Send token2 to investor2
-    transaction = await token2.connect(deployer).transfer(investor2.address, tokens(1000000))
+    transaction = await token2.connect(arbitrager).transfer(investor2.address, tokens(1000000))
     await transaction.wait()    
     
     // deploy AMM contracts
@@ -152,9 +151,9 @@ describe('Trader', () => {
     // call depositTokens function from FLP and place tokens
     console.log (`Transferring tokens to FlashLoanPool\n`);
     let poolAmount = tokens(500000000)
-    transaction = await token1.connect(deployer).approve(flashLoanPool.address, poolAmount)
+    transaction = await token1.connect(arbitrager).approve(flashLoanPool.address, poolAmount)
     await transaction.wait()
-    await flashLoanPool.connect(deployer).depositTokens(poolAmount)
+    await flashLoanPool.connect(arbitrager).depositTokens(poolAmount)
     await transaction.wait()
 
     // Flash Loan Pool Balance
@@ -182,10 +181,10 @@ describe('Trader', () => {
     let traderUSDAmount = tokens(1000000)
     let traderSOBAmount = tokens(1000000)
 
-    let transaction = await token1.connect(deployer).transfer(trader.address, traderUSDAmount)
+    let transaction = await token1.connect(arbitrager).transfer(trader.address, traderUSDAmount)
     await transaction.wait()
 
-    transaction = await token2.connect(deployer).transfer(trader.address, traderSOBAmount)
+    transaction = await token2.connect(arbitrager).transfer(trader.address, traderSOBAmount)
     await transaction.wait()
 
     
@@ -198,13 +197,11 @@ describe('Trader', () => {
     let balance2 = await token2.balanceOf(trader.address)
     console.log(`Trader contract SOB Token balance before swap: ${ethers.utils.formatEther(balance2)}\n`)
     
-    
     // call arb function
     let borrowAmount = tokens(100000)
     console.log(`Calling Arbitrage function`)  
-    transaction = await trader.connect(deployer).arbitrage(token1.address, token2.address, borrowAmount);
+    transaction = await trader.connect(arbitrager).arbitrage(token1.address, token2.address, borrowAmount);
     
-
     // Check Trader contract balance after swap
     await transaction.wait()
     console.log(`Arbitrage completed: ${ethers.utils.formatEther(borrowAmount)}\n`);
@@ -231,7 +228,7 @@ describe('Trader', () => {
     
         
     // call flashloan function
-    transaction = await trader.connect(deployer).flashLoan(borrowAmount);
+    transaction = await trader.connect(arbitrager).flashLoan(borrowAmount);
     
     // check token1 balance for Trader.sol
     balance1 = await token1.balanceOf(trader.address)
