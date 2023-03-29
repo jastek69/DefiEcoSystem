@@ -118,24 +118,7 @@ describe('Trader', () => {
     console.log(`AMM2 USD Token Balance: ${ethers.utils.formatEther(await amm2.token1Balance())} \n`)
     console.log(`AMM2 Sobek Token Balance: ${ethers.utils.formatEther(await amm2.token2Balance())} \n`)
     
-    
-    describe('Deployment AMM1 and AMM2', () => {
-        it('has an address', async () => {
-        expect(amm1.address).to.not.equal(0x0)
-        expect(amm2.address).to.not.equal(0x0)
-        })    
-
-        it('tracks token1 address', async () => {
-        expect(await amm1.token1()).to.equal(token1.address)
-        expect(await amm2.token1()).to.equal(token1.address)
-        })
-
-        it('tracks token2 address', async () => {
-        expect(await amm1.token2()).to.equal(token2.address)
-        expect(await amm2.token2()).to.equal(token2.address)
-        })  
-    })
-    
+        
     // deploy FLP
     // Deploy Flash Loan Pool contract
     console.log(`Deploying FlashLoanPool contract...\n`);
@@ -167,11 +150,11 @@ describe('Trader', () => {
     // Deploy Trader contract
     console.log(`Deploying Trader contract...\n`)
     const Trader = await ethers.getContractFactory("Trader")
-    trader = await Trader.deploy(token1.address, token2.address, "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", amm1.address, amm2.address)
+    trader = await Trader.deploy(token1.address, token2.address, flashLoanPool.address, amm1.address, amm2.address)
     await trader.deployed()
     expect(trader.address).to.not.equal(0x0)
     console.log(`Trader deployed to: ${trader.address}\n`); 
-    })    
+})    
     
     
     it('Does Arbitrage...', async () => {
@@ -215,20 +198,22 @@ describe('Trader', () => {
     balance2 = await token2.balanceOf(trader.address)
     console.log(`Trader contract SOB Token balance after swap: ${ethers.utils.formatEther(balance2)}\n`)    
     
-    
+})
+
   it('Does Arbitrage with Flashloan ...', async () => {
+    let borrowAmount = tokens(100000)
     
     // check token1 balance for Trader.sol
-    balance1 = await token1.balanceOf(trader.address)
+    let balance1 = await token1.balanceOf(trader.address)
     console.log(`Trader contract USD Token balance after swap: ${ethers.utils.formatEther(balance1)}\n`)    
     
     // check token2 bal for trader.sol
-    balance2 = await token2.balanceOf(trader.address)
+    let balance2 = await token2.balanceOf(trader.address)
     console.log(`Trader contract SOB Token balance after swap: ${ethers.utils.formatEther(balance2)}\n`)    
     
         
     // call flashloan function
-    transaction = await trader.connect(arbitrager).flashLoan(borrowAmount);
+    let transaction = await trader.connect(arbitrager).flashLoan(borrowAmount);
     
     // check token1 balance for Trader.sol
     balance1 = await token1.balanceOf(trader.address)
@@ -243,6 +228,5 @@ describe('Trader', () => {
     console.log(`Deployers Token1 balance after swap: ${ethers.utils.formatEther(balance3)}\n`)
     //  expect(estimate).to.equal(balance)
      
-    })
-  })
+  })  
 }) //  describe Trader end

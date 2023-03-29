@@ -52,7 +52,10 @@ contract Trader is ReentrancyGuard {
     
     // Do something with the money here - call arbitrage function    
     // Arbitrage here buy on AMM1 and sell on AMM2
-    // TODO: advanced - use script to get prices to change which will call trader contract to buy and sell
+    // TODO: Advanced functions: 
+    //      use script to get prices to change which will call trader contract to buy and sell
+    //      Exchange direction: either way
+    
       
       arbitrage(token1, token2, _borrowAmount );
 
@@ -62,28 +65,20 @@ contract Trader is ReentrancyGuard {
 
     IERC20(token1).transfer(
         owner,
-        IERC20(token1).balanceOf(address(this))
+        IERC20(token1).balanceOf(address(this)) // now test with calling the Flashloan - call flashloan and test
     );
-}
-
-    //////////////////////////////////////////////////////////////////////////////
-    // NOTES
-    // FLOW: 
-    // Flashloan in USD 
-    // Buy Tokens on AMM1: swap Tokens USD for SOB on AMM1 >> buy SOB tokens 
-    // Swap/sell Tokens on AMM2: SOB for USD on AMM2
-    // calculate Withdraw amount then removeLiquidity and payback Loan    
+}   
 
     function arbitrage(            
         address _flashToken, // USD
-        address _arbToken,   // Sobek Token    
+        address _arbToken,   // NOTE: Sobek Token can this be replaced by token2 and thus removed
         uint256 _flashAmount            
     ) public  {        // ReentrancyGuard
             
         // track balances of tokens
         uint256 arbAmount = _flashAmount;            
         
-        // take flashtoken and swap on AMM1 for arbtoken in USD
+        // take flashtoken and swap on AMM1 for arbtoken
         IERC20(_flashToken).approve((AMM1_ADDRESS), arbAmount);   
         AMM(AMM1_ADDRESS).swapToken1(arbAmount);   // Swap USD for SOB tokens on AMM1
 
@@ -91,5 +86,5 @@ contract Trader is ReentrancyGuard {
         uint256 token2Balance = IERC20(token2).balanceOf(address(this));
         IERC20(token2).approve(AMM2_ADDRESS, token2Balance);
         AMM(AMM2_ADDRESS).swapToken2(token2Balance);
-    }    
+    }
 }
