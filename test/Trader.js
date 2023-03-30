@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
+const { result } = require('lodash');
 
 const tokens = (n) => {
   return ethers.utils.parseUnits(n.toString(), 'ether')
@@ -201,11 +202,13 @@ describe('Trader', () => {
 })
 
   it('Does Arbitrage with Flashloan ...', async () => {
-    let borrowAmount = tokens(100000)
+    let result, 
+        borrowAmount = tokens(100000)
     
     // check token1 balance for Trader.sol
     let balance1 = await token1.balanceOf(trader.address)
-    console.log(`Trader contract USD Token balance after swap: ${ethers.utils.formatEther(balance1)}\n`)    
+    console.log(`Trader contract USD Token balance after swap: ${ethers.utils.formatEther(balance1)}\n`)
+
     
     // check token2 bal for trader.sol
     let balance2 = await token2.balanceOf(trader.address)
@@ -214,19 +217,37 @@ describe('Trader', () => {
         
     // call flashloan function
     let transaction = await trader.connect(arbitrager).flashLoan(borrowAmount);
+   // result = await transaction.wait()
+
+    // Emit an Event
+    await expect(transaction).to.emit(trader, 'Loan').withArgs(
+        token1.address,
+        borrowAmount
+    )
     
     // check token1 balance for Trader.sol
-    balance1 = await token1.balanceOf(trader.address)
-    console.log(`Trader contract USD Token balance after swap: ${ethers.utils.formatEther(balance1)}\n`)   
+    balance1 = await token1.balanceOf(trader.address)    
+    let traderUSDBalance = await token1.balanceOf(trader.address)
+    expect(traderUSDBalance).to.equal(balance1)
+    console.log(`Trader contract USD Token balance after swap: ${ethers.utils.formatEther(balance1)}\n`)
 
     // check token2 bal for trader.sol
-    balance2 = await token2.balanceOf(trader.address)
-    console.log(`Trader contract SOB Token balance after swap: ${ethers.utils.formatEther(balance2)}\n`)   
+    balance2 = await token2.balanceOf(trader.address)    
+    let traderSobBalance = await token2.balanceOf(trader.address)
+    expect(traderSobBalance).to.equal(balance2)
+    console.log(`Trader contract SOB Token balance after swap: ${ethers.utils.formatEther(balance2)}\n`)
 
     // check token1 bal for deployer wallet (this is who received profit)
     let balance3 = await token1.balanceOf(investor1.address)
-    console.log(`Deployers Token1 balance after swap: ${ethers.utils.formatEther(balance3)}\n`)
-    //  expect(estimate).to.equal(balance)
+    let deployerUSDBalance = await token1.balanceOf(investor1.address)
+    expect(deployerUSDBalance).to.equal(balance3)
+    console.log(`Deployers USD Token balance after swap: ${ethers.utils.formatEther(deployerUSDBalance)}\n`)    
+    
+    // check token2 bal for deployer wallet (this is who received profit)
+    let balance4 = await token2.balanceOf(investor1.address)
+    let deployerSOBBalance = await token2.balanceOf(investor1.address)
+    expect(deployerSOBBalance).to.equal(balance4)
+    console.log(`Deployers Sobek Token balance after swap: ${ethers.utils.formatEther(deployerSOBBalance)}\n`)
      
   })  
 }) //  describe Trader end

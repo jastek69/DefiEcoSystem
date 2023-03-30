@@ -9,15 +9,17 @@ const hre = require("hardhat");
 async function main() {
   const Token = await hre.ethers.getContractFactory('Token')
   
-  // Deploy Sobek Token (token 1)
+  // Deploy USD (token 1)
+  const usd = await Token.deploy('USD Token', 'USD', '1000000000') // 1 Billion tokens
+  await usd.deployed()  
+  console.log(`USD Token deployed to: ${usd.address}\n`)
+  
+  // Deploy Sobek Token (token 2)
   let sobek = await Token.deploy('Sobek', 'SOB', '1000000000') // 1 Billion tokens
   await sobek.deployed()  
   console.log(`Sobek Token deployed to: ${sobek.address}\n`)
 
-  // Deploy USD (token 2)
-  const usd = await Token.deploy('USD Token', 'USD', '1000000000') // 1 Billion tokens
-  await usd.deployed()  
-  console.log(`USD Token deployed to: ${usd.address}\n`)
+  
 
   // Deploy AMM
   const AMM = await hre.ethers.getContractFactory('AMM')
@@ -38,3 +40,11 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
+// TODO
+// Deployment script on run on hardhat - All in One
+// price manipulation script
+// arbitrage script Flash Loan script
+// get running locally then test network
+// Interfaces for AMM1 and AMM2
+// video explanation
