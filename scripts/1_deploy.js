@@ -46,6 +46,78 @@ async function main() {
     const amm2 = await AMM2.deploy(sobek.address, usd.address)
     console.log(`AMM2 contract deployed to: ${amm2.address}\n`)  
     
+      
+    // Fund AMMs
+    console.log(`Adding Liquidity to AMMs...\n`)
+    const accounts = await ethers.getSigners()
+    const arbitrager = accounts[0]
+    const liquidityProvider = accounts[1]
+    const investor1 = accounts[2]
+    const investor2 = accounts[3]
+    const investor3 = accounts[4]
+    const investor4 = accounts[5]
+
+
+    console.log(`Fetching tokens and transferring to accounts ... \n`)
+    
+    // Send tokens to liquidity provider
+    let transaction = await usd.connect(arbitrager).transfer(liquidityProvider.address, tokens(10000000)) // NOTE: use 'connect' to connect to a contract
+    await transaction.wait()
+    transaction = await sobek.connect(arbitrager).transfer(liquidityProvider.address, tokens(10000000)) // NOTE: "let" already done in first declaration
+    await transaction.wait()
+
+    // Send Sobek tokens to investor 1
+    transaction = await sobek.connect(liquidityProvider).transfer(investor1.address, tokens(1500000))
+    await transaction.wait()
+
+    // Send Sobek tokens to investor 2
+    transaction = await usd.connect(liquidityProvider).transfer(investor2.address, tokens(1500000))
+    await transaction.wait()
+
+    // Send Sobek tokens to investor 3
+    transaction = await sobek.connect(liquidityProvider).transfer(investor3.address, tokens(1500000))
+    await transaction.wait()
+
+    // Send Sobek tokens to investor 4
+    transaction = await usd.connect(liquidityProvider).transfer(investor4.address, tokens(15000000))
+    await transaction.wait()
+
+    
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Add liquidity (create price difference in the AMMs SOB)
+    // Add Liquidity to AMM1
+    let amm1UsdAmount = tokens(1000000)
+    let amm1SobAmount = tokens(1000000)
+    
+    // Add Liquidity to AMM2
+    let amm2UsdAmount = tokens(1000000)
+    let amm2SobAmount = tokens(500000)
+
+    // Add liquidity to AMM1
+    transaction = await usd.connect(liquidityProvider).approve(amm1.address, amm1UsdAmount)
+    await transaction.wait()
+
+    transaction = await sobek.connect(liquidityProvider).approve(amm1.address, amm1SobAmount)
+    await transaction.wait()
+
+    console.log(`Adding liquidity to AMM1 ... \n`)
+    transaction = await amm1.connect(liquidityProvider).addLiquidity(amm1UsdAmount, amm1SobAmount)
+    await transaction.wait()
+    
+
+    // Add liquidity to AMM2
+    transaction = await usd.connect(liquidityProvider).approve(amm2.address, amm2UsdAmount)
+    await transaction.wait()
+
+    transaction = await sobek.connect(liquidityProvider).approve(amm2.address, amm2SobAmount)
+    await transaction.wait()
+
+    console.log(`Adding liquidity to AMM2 ... \n`)
+    transaction = await amm1.connect(liquidityProvider).addLiquidity(amm2UsdAmount, amm2SobAmount)
+    await transaction.wait()
+
+
+    
     // Deploying Contracts
     console.log(`Deploying contracts...\n`)
     
