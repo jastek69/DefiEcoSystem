@@ -23,7 +23,7 @@ async function main() {
     console.log(`Deploying tokens...\n`)
     const Token = await ethers.getContractFactory("Token");
 
-    // Deploy USD Token
+    // Deploy USD Token (token 1)
     let usd = await Token.deploy('usd', 'USD', '1000000000') // 1 Billion tokens
     await usd.deployed()  
     console.log(`USD Token deployed to: ${usd.address}\n`)
@@ -37,17 +37,18 @@ async function main() {
 
     console.log(`Deploying Market contracts ...\n`)
     // Deploy AMM1
-    const AMM1 = await hre.ethers.getContractFactory('AMM1')
-    const amm1 = await AMM1.deploy(sobek.address, usd.address)
+    const AMM = await hre.ethers.getContractFactory('AMM')
+    const amm1 = await AMM.deploy(sobek.address, usd.address)
     console.log(`AMM1 contract deployed to: ${amm1.address}\n`)
 
     // Deploy AMM2
     const AMM2 = await hre.ethers.getContractFactory('AMM2')
     const amm2 = await AMM2.deploy(sobek.address, usd.address)
-    console.log(`AMM2 contract deployed to: ${amm2.address}\n`)
-
-
+    console.log(`AMM2 contract deployed to: ${amm2.address}\n`)  
+    
+    // Deploying Contracts
     console.log(`Deploying contracts...\n`)
+    
     // Deploy Flash Loan Pool contract
     const FlashLoanPool = await hre.ethers.getContractFactory("FlashLoanPool")
     const flashLoanPool = await FlashLoanPool.deploy(usd.address)
@@ -55,10 +56,12 @@ async function main() {
     console.log(`FlashLoanPool deployed to: ${flashLoanPool.address}\n`);
 
     // Deploy Trader contract
-    const Trader = await ethers.getContractFactory("Trader");
-    const trader = await Trader.deploy(usd.address, flashLoanPool.address);
+    const Trader = await hre.ethers.getContractFactory("Trader");
+    const trader = await Trader.deploy(usd.address, sobek.address, flashLoanPool.address, amm1.address, amm2.address);
     await trader.deployed();
-    console.log(`Trader deployed to: ${trader.address}\n`);    
+    console.log(`Trader deployed to: ${trader.address}\n`);
+
+    console.log(`Deployment completed\n`)
 }
 
 main()

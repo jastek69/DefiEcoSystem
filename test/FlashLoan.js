@@ -61,6 +61,12 @@ describe('FlashLoan', () => {
       amm2 = await AMM.deploy(token1.address, token2.address)
 
     
+
+      // Deploy Trader Contract
+
+      // Deploy Flash Loan Pool
+
+
    
 
     // Add Liquidity to AMM1
@@ -188,9 +194,9 @@ describe('FlashLoan', () => {
     // Transfer tokens to Trader contract
     // call depositTokens function from FLP and place 1000000 tokens
     console.log (`Transferring tokens to Trader \n`);
-    let amount = tokens(1000000)
+    let traderAmount = tokens(1000000)
     let borrowAmount = tokens(100000)
-    let transaction = await token1.connect(deployer).transfer(trader.address, amount)
+    let transaction = await token1.connect(deployer).transfer(trader.address, traderAmount)
     await transaction.wait()   
      
 
@@ -221,7 +227,7 @@ describe('FlashLoan', () => {
 
     // Arbitrage Balance
     let arbBalance = await token1.balanceOf(trader.address)
-    expect(arbBalance).to.equal(amount)
+    expect(arbBalance).to.equal(traderAmount)
     console.log(`Trader USD balance before swap: ${ethers.utils.formatEther(arbBalance)}\n`);
 
     let arbBalance2 = await token2.balanceOf(trader.address)    
@@ -240,36 +246,55 @@ describe('FlashLoan', () => {
     // console.log(`AMM2 USD Token Balance before swap: ${ethers.utils.formatEther(await amm2.token1Balance())} \n`)
     // console.log(`AMM2 Sobek Token Balance before swap: ${ethers.utils.formatEther(await amm2.token2Balance())} \n`)
 
-    
 
-    // Call Arb function and test results - check balances make sure values match    
-    console.log(`Calling Arbitrage function`)  
-    transaction = await trader.connect(deployer).arbitrage(token1.address, token2.address, borrowAmount);
-  //  transaction = await trader.connect(deployer).flashLoan(borrowAmount);
-    await transaction.wait()
-    console.log(`Arbitrage completed: ${ethers.utils.formatEther(amount)}\n`);
-  
-    // Check balance after swap
-    let balance = await token1.balanceOf(trader.address)
-    console.log(`Trader USD Token balance after swap: ${ethers.utils.formatEther(balance)}\n`)
+    describe('Arbitrage Function', () => {
+      it('calls flash loan', async () => {    
     
-    // Check balance after swap
-    let balance2 = await token2.balanceOf(trader.address)
-    console.log(`Trader Sobek Token balance after swap: ${ethers.utils.formatEther(balance2)}\n`)
+        // Call Arb function and test results - check balances make sure values match    
+        console.log(`Calling Arbitrage function`)
+        
+        // NOTE use one trasnaction or the other
+        
+        // // Use Emit Event to confirm loan payment
+        // await expect(transaction).to.emit(trader, 'Loan').withArgs( 
+        // token1.address,   
+        // borrowAmount
+        // ) 
+      })
 
-    // Use Emit Event to confirm loan payment
-    await expect(transaction).to.emit(trader, 'Loan').withArgs( 
-      token1.address,   
-      borrowAmount
-      ) 
+      it('has proper balance', async () => { 
+        // Check Trader contract balance after swap
+        let balance = await token1.balanceOf(trader.address)
+        console.log(`Trader contract USD Token balance after swap: ${ethers.utils.formatEther(balance)}\n`)
+        
+        // Check Trader contract balance after swap
+        let balance2 = await token2.balanceOf(trader.address)
+        console.log(`Trader contract Sobek Token balance after swap: ${ethers.utils.formatEther(balance2)}\n`)
+
+        transaction = await trader.connect(deployer).arbitrage(token1.address, token2.address, tokens(borrowAmount)); // ERROR with this line
+        transaction = await trader.connect(deployer).flashLoan(tokens(borrowAmount)); // Payback balance not correct
+        await transaction.wait()
+        console.log(`Arbitrage completed: ${ethers.utils.formatEther(borrowAmount)}\n`);
+
+        let deployerBalance1 = await token1.balanceOf(deployer.address)
+        console.log(`Deployer USD balance before swap: ${ethers.utils.formatEther(deployerBalance1)}\n`)
+
+        let deployerBalance2 = await token2.balanceOf(deployer.address)
+        console.log(`Deployer Sobek balance before swap: ${ethers.utils.formatEther(deployerBalance2)}\n`)
+
+      })
+
+
     
-    // NOTE: To Test if payback Fails comment out repay code and check for require statement
-    // Check Payback Loan
-    console.log(`Paying Back FlashLoan`);
-    poolBalance = await token1.balanceOf(flashLoanPool.address)
-    expect(poolBalance).to.equal(amount)
-    console.log(`Transferred Tokens to pool: ${amount}\n`);
-
+      it('Pays back Flash Loan', async () => { 
+        // NOTE: To Test if payback Fails comment out repay code and check for require statement
+        // Check Payback Loan
+        console.log(`Paying Back FlashLoan`);
+        poolBalance = await token1.balanceOf(flashLoanPool.address)
+        expect(poolBalance).to.equal(borrowAmount)
+        console.log(`Transferred Tokens to pool: ${ethers.utils.formatEther(borrowAmount)}\n`);
+      })
+  })
 
     // Get current AMM1 Pool Balance 
     // console.log(`AMM1 USD Token Balance after swap: ${ethers.utils.formatEther(await amm1.token1Balance())} \n`)
