@@ -1,48 +1,57 @@
 // -- IMPORT PACKAGES -- //
+const { ethers } = require("hardhat");
+const hre = require("hardhat");
+const config = require('../src/config.json')
+
+const tokens = (n) => {
+    return ethers.utils.parseUnits(n.toString(), 'ether')
+  }
+  
+const ether = tokens
+const shares = ether
+
 require("dotenv").config();
 
-const Web3 = require('web3')
-const {
-    ChainId,
-    Token,
-    WETH
-} = require("@uniswap/sdk")
+const AMM1_Router = require('../src/abis/AMM.json')
+const AMM2_Router = require('../src/abis/AMM2.json')
+const FlashLoanPool_Router = require('../src/abis/FlashLoanPool.json')
+const Trader_Router = require('../src/abis/Trader.json')
 
-
-const IERC20 = require('@openzeppelin/contracts/build/contracts/ERC20.json')
 
 // -- SETUP NETWORK & WEB3 -- //
+const Web3 = require('web3')
+const IERC20 = require('@openzeppelin/contracts/build/contracts/ERC20.json')
 
-const chainId = ChainId.MAINNET
+
+// Fetch Network
+const { chainId } = await ethers.provider.getNetwork()
 const web3 = new Web3('http://127.0.0.1:7545')
 
 
-
-
-
-// get pair
-const { getPairContract, calculatePrice } = require('../helpers/helpers')
-
+// Import Contracts //
 // -- IMPORT & SETUP AMM1 and AMM2 CONTRACTS -- //
-
-const config = require('../config.json')
-
-
-// -- CONFIGURE VALUES HERE -- //
-
-const UNLOCKED_ACCOUNT = '0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc ' // USDC Unlocked Account
-const ERC20_ADDRESS = process.env.ARB_AGAINST // USD AMM2
-const AMOUNT = '15000000' // 15,000,000 USDC
-const GAS = 450000
+const AMM1_Factory = new web3.eth.Contract(AMM1_Router.abi, config.amm1.address)
+const AMM2_Factory = new web3.eth.Contract(AMM2_Router.abi, config.amm2.address)
+const FlashLoan = new web3.eth.Contract(FlashLoanPool_Router.abi, config.FlashLoanPool.address)
+const TRADER = new web3.eth.Contract(Trader_Router.abi, config.Trader.address)
 
 
 // -- SETUP ERC20 CONTRACT & TOKEN -- //
 const ERC20_CONTRACT = new web3.eth.Contract(IERC20.abi, ERC20_ADDRESS)
 const SOB_CONTRACT = new web3.eth.Contract(IERC20.abi, process.env.ARB_FOR)
+const sobek = await ethers.getContractAt('Token', config[chainId].sobek.address);
 
 
+// -- CONFIGURE VALUES HERE -- //
+
+const AMM1_FACTORY_TO_USE = AMM1_Factory
+const AMM2_FACTORY_TO_USE = AMM2_Factory
 
 
+const UNLOCKED_ACCOUNT = '0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc' // USDC Unlocked Account
+const ERC20_ADDRESS = process.env.ARB_AGAINST // USD AMM2
+const AMOUNT = '15000000' // 15,000,000 USDC
+const GAS = 450000
 
 
 
@@ -52,16 +61,18 @@ const main = async () => {
     const accounts = await web3.eth.getAccounts()
     const account = accounts[1] // This will be the account to receive USD  after we perform the swap to manipulate price
 
+
+    // What to do here
     const pairContract = await getPairContract(AMM2, ERC20_ADDRESS, process.env.ARB_FOR)
     const token = new Token(
-        ChainId.MAINNET,
+        config[chainId],
         ERC20_ADDRESS,
-        18, // USDC so 6 instead of 18 decimals
+        18, // USD
         await ERC20_CONTRACT.methods.symbol().call(),
         await ERC20_CONTRACT.methods.name().call()
     )
 
-    // Fetch price of USDC/WETH before we execute the swap
+    // Fetch price of USD/Sobek before we execute the swap
     const priceBefore = await calculatePrice(pairContract)
 
     await manipulatePrice(token, account)
