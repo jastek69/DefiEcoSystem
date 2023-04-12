@@ -48,9 +48,9 @@ const AMM1_FACTORY_TO_USE = AMM1_Factory
 const AMM2_FACTORY_TO_USE = AMM2_Factory
 
 
-const UNLOCKED_ACCOUNT = '0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc' // USDC Unlocked Account
+const UNLOCKED_ACCOUNT = '0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc' // Add USD to this Account
 const ERC20_ADDRESS = process.env.ARB_AGAINST // USD AMM2
-const AMOUNT = '15000000' // 15,000,000 USDC
+const AMOUNT = '15000000' // 15,000,000 USD
 const GAS = 450000
 
 
@@ -60,10 +60,10 @@ const GAS = 450000
 const main = async () => {
     const accounts = await web3.eth.getAccounts()
     const account = accounts[1] // This will be the account to receive USD  after we perform the swap to manipulate price
-
+    const Token = await ethers.getContractFactory("Token");
 
     // What to do here
-    const pairContract = await getPairContract(AMM2, ERC20_ADDRESS, process.env.ARB_FOR)
+  //  const pairContract = await getPairContract(AMM2, ERC20_ADDRESS, process.env.ARB_FOR)
     const token = new Token(
         config[chainId],
         ERC20_ADDRESS,
