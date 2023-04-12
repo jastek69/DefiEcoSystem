@@ -65,7 +65,7 @@ async function main() {
     let transaction
     
     transaction = await usd.connect(liquidityProvider).transfer(investor1.address, tokens(10000000)) // NOTE: use 'connect' to connect to a contract
-  //  await transaction.wait()    
+    await transaction.wait()
 
   //  transaction = await sobek.connect(liquidityProvider).transfer(investor2.address, tokens(10000000))
   //  await transaction.wait()   

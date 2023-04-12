@@ -62,7 +62,7 @@ const main = async () => {
     const account = accounts[1] // This will be the account to receive USD  after we perform the swap to manipulate price
     const Token = await ethers.getContractFactory("Token");
 
-    // What to do here
+   // What to do here
   //  const pairContract = await getPairContract(AMM2, ERC20_ADDRESS, process.env.ARB_FOR)
     const token = new Token(
         config[chainId],
@@ -73,11 +73,11 @@ const main = async () => {
     )
 
     // Fetch price of USD/Sobek before we execute the swap
-    const priceBefore = await calculatePrice(pairContract)
+   // const priceBefore = await calculatePrice(pairContract)
 
     await manipulatePrice(token, account)
 
-    // Fetch price of USDC/WETH after the swap
+    // Fetch price of USDC/Sobek after the swap
     const priceAfter = await calculatePrice(pairContract)
 
     const data = {
@@ -88,7 +88,7 @@ const main = async () => {
     console.table(data)
 
     let balance = await SOB_CONTRACT.methods.balanceOf(account).call()
-    balance = web3.utils.fromWei(balance.toString(), 'mwei')    //Note: Using USDC so switch to mwei instead of ether
+    balance = web3.utils.fromWei(balance.toString(), 'mwei')    //Note: Using USD so switch to mwei instead of ether - add ethers conversion
 
     console.log(`\nBalance in receiver account: ${balance} WETH\n`)
 }
@@ -124,17 +124,17 @@ async function manipulatePrice(token, account) {
     console.log(`\nBeginning Swap...\n`)
 
     console.log(`Input Token: ${token.symbol}`)
-    console.log(`Output Token: ${WETH[chainId].symbol}\n`)
+    console.log(`Output Token: ${SOB[chainId].symbol}\n`)
 
     const amountIn = new web3.utils.BN(
-        web3.utils.toWei(AMOUNT, 'mwei')   // Note: Using USDC so switch to mwei instead of ether
+        web3.utils.toWei(AMOUNT, 'wei')   // Note: Using USD switch back to Ether
     )
 
     const path = [token.address, process.env.ARB_FOR]
     const deadline = Math.floor(Date.now() / 1000) + 60 * 20 // 20 minutes
 
-    await ERC20_CONTRACT.methods.approve(AMM2._address, amountIn).send({ from: UNLOCKED_ACCOUNT })
-    const receipt = await AMM2.methods.swapExactTokensForTokens(amountIn, 0, path, account, deadline).send({ from: UNLOCKED_ACCOUNT, gas: GAS });
+    await ERC20_CONTRACT.methods.approve(AMM2_FACTORY_TO_USE._address, amountIn).send({ from: UNLOCKED_ACCOUNT })
+    const receipt = await AMM2_FACTORY_TO_USE.methods.swapExactTokensForTokens(amountIn, 0, path, account, deadline).send({ from: UNLOCKED_ACCOUNT, gas: GAS });
 
     console.log(`Swap Complete!\n`)
 
