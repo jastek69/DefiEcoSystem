@@ -1,3 +1,5 @@
+
+
 // -- IMPORT PACKAGES -- //
 const { ethers } = require("hardhat");
 const hre = require("hardhat");
@@ -12,8 +14,8 @@ const shares = ether
 
 require("dotenv").config();
 
-const AMM1_Router = require('../src/abis/AMM.json')
-const AMM2_Router = require('../src/abis/AMM2.json')
+const AMM1_Router = require('../src/abis/AMM.json')     // AMM1
+const AMM2_Router = require('../src/abis/AMM2.json')    // AMM2
 const FlashLoanPool_Router = require('../src/abis/FlashLoanPool.json')
 const Trader_Router = require('../src/abis/Trader.json')
 
@@ -54,7 +56,6 @@ const AMOUNT = '15000000' // 15,000,000 USD
 const GAS = 450000
 
 
-
 // -- MAIN SCRIPT -- //
 
 const main = async () => {
@@ -62,8 +63,7 @@ const main = async () => {
     const account = accounts[1] // This will be the account to receive USD  after we perform the swap to manipulate price
     const Token = await ethers.getContractFactory("Token");
 
-   // What to do here
-  //  const pairContract = await getPairContract(AMM2, ERC20_ADDRESS, process.env.ARB_FOR)
+    const pairContract = await getPairContract(AMM2_Router, ERC20_ADDRESS, process.env.ARB_FOR)
     const token = new Token(
         config[chainId],
         ERC20_ADDRESS,
@@ -73,61 +73,59 @@ const main = async () => {
     )
 
     // Fetch price of USD/Sobek before we execute the swap
-   // const priceBefore = await calculatePrice(pairContract)
+    const priceBefore = await calculatePrice(pairContract)
 
     await manipulatePrice(token, account)
 
-    // Fetch price of USDC/Sobek after the swap
+    // Fetch price of USD/Sobek after the swap
     const priceAfter = await calculatePrice(pairContract)
 
     const data = {
-        'Price Before': `1 ${SOB[chainId].symbol} = ${Number(priceBefore).toFixed(0)} ${token.symbol}`,
-        'Price After': `1 ${SOB[chainId].symbol} = ${Number(priceAfter).toFixed(0)} ${token.symbol}`,
+        'Price Before': `1 ${sobek[chainId].symbol} = ${Number(priceBefore).toFixed(0)} ${token.symbol}`,
+        'Price After': `1 ${sobek[chainId].symbol} = ${Number(priceAfter).toFixed(0)} ${token.symbol}`,
     }
 
     console.table(data)
 
     let balance = await SOB_CONTRACT.methods.balanceOf(account).call()
-    balance = web3.utils.fromWei(balance.toString(), 'mwei')    //Note: Using USD so switch to mwei instead of ether - add ethers conversion
-
-    console.log(`\nBalance in receiver account: ${balance} WETH\n`)
+    balance = web3.utils.fromWei(balance.toString(), 'ether')
+    console.log(`\nBalance in receiver account: ${balance} Sobek\n`)
 }
 
 main()
 
-// 
+/////////////////  QUESTION -- Do I need these functions //////////////////////////////////
+//  async function getPairAddress(_AMM2, _token0, _token1) {
+//      const pairAddress = await AMM2_FACTORY_TO_USE.methods.getPair(_token0, _token1).call()
+//      return pairAddress
+//  }
 
-// async function getPairAddress(_AMM2, _token0, _token1) {
-//     const pairAddress = await _V2Factory.methods.getPair(_token0, _token1).call()
-//     return pairAddress
-// }
+//  async function getPairContract(_AMM2, _token0, _token1) {
+//      const pairAddress = await getPairAddress(_AMM2, _token0, _token1)
+//      const pairContract = new web3.eth.Contract(IUniswapV2Pair.abi, pairAddress)
+//      return pairContract
+//  }
 
-// async function getPairContract(_AMM2, _token0, _token1) {
-//     const pairAddress = await getPairAddress(_AMM2, _token0, _token1)
-//     const pairContract = new web3.eth.Contract(IUniswapV2Pair.abi, pairAddress)
-//     return pairContract
-// }
+//  async function getReserves(_pairContract) {
+//      const reserves = await _pairContract.methods.getReserves().call()
+//      return [reserves.reserve0, reserves.reserve1]
+//  }
 
-// async function getReserves(_pairContract) {
-//     const reserves = await _pairContract.methods.getReserves().call()
-//     return [reserves.reserve0, reserves.reserve1]
-// }
-
-// async function calculatePrice(_pairContract) {
+//  async function calculatePrice(_pairContract) {
 //     const [reserve0, reserve1] = await getReserves(_pairContract)
-//    // return Big(reserve0).div(Big(reserve1)).toString() // non USDC conversion
-//    return Big(`${reserve0}000000000000`).div(Big(reserve1)).toString() // USDC as token0/reserve0 conversion   
-// }
+//     return Big(reserve0).div(Big(reserve1)).toString() // non USDC conversion
+//    // return Big(`${reserve0}000000000000`).div(Big(reserve1)).toString() // USDC as token0/reserve0 conversion   
+//  }
 
 
 async function manipulatePrice(token, account) {
     console.log(`\nBeginning Swap...\n`)
 
     console.log(`Input Token: ${token.symbol}`)
-    console.log(`Output Token: ${SOB[chainId].symbol}\n`)
+    console.log(`Output Token: ${sobek[chainId].symbol}\n`)
 
     const amountIn = new web3.utils.BN(
-        web3.utils.toWei(AMOUNT, 'wei')   // Note: Using USD switch back to Ether
+        web3.utils.toWei(AMOUNT, 'ether')   // Note: Using USD switch back to Ether
     )
 
     const path = [token.address, process.env.ARB_FOR]
@@ -140,4 +138,3 @@ async function manipulatePrice(token, account) {
 
     return receipt
 }
-
