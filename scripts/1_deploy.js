@@ -36,12 +36,12 @@ async function main() {
     const Token = await ethers.getContractFactory("Token");
 
     // Deploy USD Token (token 1)
-    let usd = await Token.deploy('USD Token', 'USD', '1000000000') // 1 Billion tokens
+    let usd = await Token.deploy('USD Token', 'USD', tokens(1000000000)) // 1 Billion tokens
     await usd.deployed()  
     console.log(`USD Token deployed to: ${usd.address}\n`)
 
     // Deploy Sobek Token (token 2)
-    let sobek = await Token.deploy('Sobek Token', 'SOB', '1000000000') // 1 Billion tokens
+    let sobek = await Token.deploy('Sobek Token', 'SOB', tokens(1000000000)) // 1 Billion tokens
     await sobek.deployed()  
     console.log(`Sobek Token deployed to: ${sobek.address}\n`)
 
@@ -91,8 +91,8 @@ async function main() {
     // Send tokens to liquidity provider
     // let transaction
     
-  //  let transaction = await sobek.connect(deployer).transfer(investor1.address, tokens(100)) // NOTE: use 'connect' to connect to a contract
-  //    await transaction.wait()
+    // transaction = await sobek.connect(deployer).transfer(investor1.address, tokens(100)) // NOTE: use 'connect' to connect to a contract
+    // await transaction.wait()
 
   //  transaction = await sobek.connect(liquidityProvider).transfer(investor2.address, tokens(10000000))
   //  await transaction.wait()   

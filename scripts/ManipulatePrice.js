@@ -73,7 +73,7 @@ const main = async () => {
     )
 
     // Fetch price of USD/Sobek before we execute the swap
-    const priceBefore = await calculatePrice(pairContract)
+    const priceBefore = await calculatePrice(pairContract) // function and pairContract need to be rewritten
 
     await manipulatePrice(token, account)
 
@@ -94,7 +94,8 @@ const main = async () => {
 
 main()
 
-/////////////////  QUESTION -- Do I need these functions //////////////////////////////////
+///// ????  QUESTION -- how to handle these functions?????  //////
+//
 //  async function getPairAddress(_AMM2, _token0, _token1) {
 //      const pairAddress = await AMM2_FACTORY_TO_USE.methods.getPair(_token0, _token1).call()
 //      return pairAddress
