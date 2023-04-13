@@ -89,10 +89,10 @@ async function main() {
     console.log("Transferred liquidity to AMM contracts");
 
     // Send tokens to liquidity provider
-    // let transaction
+    let transaction
     
-    // transaction = await sobek.connect(deployer).transfer(investor1.address, tokens(100)) // NOTE: use 'connect' to connect to a contract
-    // await transaction.wait()
+    transaction = await sobek.connect(deployer).transfer(investor1.address, tokens(100)) // NOTE: use 'connect' to connect to a contract
+    await transaction.wait()
 
   //  transaction = await sobek.connect(liquidityProvider).transfer(investor2.address, tokens(10000000))
   //  await transaction.wait()   

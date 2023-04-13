@@ -60,10 +60,10 @@ const GAS = 450000
 
 const main = async () => {
     const accounts = await web3.eth.getAccounts()
-    const account = accounts[1] // This will be the account to receive USD  after we perform the swap to manipulate price
+    const account = accounts[1]                             // This will be the account to receive USD  after we perform the swap to manipulate price
     const Token = await ethers.getContractFactory("Token");
 
-    const pairContract = await getPairContract(AMM2_Router, ERC20_ADDRESS, process.env.ARB_FOR)
+    const pairContract = await getPairContract(AMM2_Router, ERC20_ADDRESS, process.env.ARB_FOR) // function getPairContract to be rewritten
     const token = new Token(
         config[chainId],
         ERC20_ADDRESS,
@@ -73,12 +73,12 @@ const main = async () => {
     )
 
     // Fetch price of USD/Sobek before we execute the swap
-    const priceBefore = await calculatePrice(pairContract) // function and pairContract need to be rewritten
+    const priceBefore = await calculatePrice(pairContract)  // function and pairContract need to be rewritten
 
     await manipulatePrice(token, account)
 
     // Fetch price of USD/Sobek after the swap
-    const priceAfter = await calculatePrice(pairContract)
+    const priceAfter = await calculatePrice(pairContract)   // function and pairContract need to be rewritten
 
     const data = {
         'Price Before': `1 ${sobek[chainId].symbol} = ${Number(priceBefore).toFixed(0)} ${token.symbol}`,
@@ -107,7 +107,7 @@ main()
 //      return pairContract
 //  }
 
-//  async function getReserves(_pairContract) {
+//  async function getReserves(_pairContract) {     // From calculatePrice function
 //      const reserves = await _pairContract.methods.getReserves().call()
 //      return [reserves.reserve0, reserves.reserve1]
 //  }
