@@ -35,6 +35,7 @@ const HDWalletProvider =
 async function main() {
   let accounts,
       deployer,
+      borrowAmount,
       arbitrager,
       liquidityProvider      
 
@@ -46,6 +47,7 @@ async function main() {
     arbitrager = accounts[1]
     liquidityProvider = accounts[2]
     
+    borrowAmount = tokens(1000000)
     
     console.log(`Preparing Transaction...\n`)
 
@@ -57,21 +59,22 @@ async function main() {
     const [account] = await hre.ethers.getSigners()
     console.log(`Account fetched: ${account.address}\n`)
 
-    // Perform flashloan    
+    
+    // Perform flashloan use Arbitrage with FlashLoan from Trader
     const USD = '0x68B1D87F95878fE05B998F19b66F4baba5De1aed'
     const _token0Contract = USD
-    const amount = hre.ethers.utils.parseUnits('1000000', "ether")  
+  //  const borrowAmount = hre.ethers.utils.parseUnits('1000000', "ether")  
 
-
+    
     console.log(`Executing Flashloan...\n`)
 
-    let transaction = await FlashLoanPool.connect(deployer).flashLoan(amount) // flashLoan(pool, amount, SOB) 
+    let transaction = await FlashLoanPool.connect(deployer).flashLoan(borrowAmount) // flashLoan(pool, amount, SOB) 
     // let result = await transaction.wait()
 
     // Emit an Event
     await expect(transaction).to.emit(FlashLoanPool, 'Loan').withArgs(
       _token0Contract.address,
-      amount
+      borrowAmount
     )
     console.log(`Transaction Successful!\n`)
     // console.log(`-- View Transaction --`)
