@@ -30,6 +30,7 @@ async function main() {
     const investor4 = accounts[5]
     const arbitrager = accounts[6]
 
+    let transaction
 
     // Deploy Token
     console.log(`Deploying tokens...\n`)
@@ -44,6 +45,12 @@ async function main() {
     let sobek = await Token.deploy('Sobek Token', 'SOB', tokens(1000000000)) // 1 Billion tokens
     await sobek.deployed()  
     console.log(`Sobek Token deployed to: ${sobek.address}\n`)
+
+    // Send tokens to liquidity provider
+    transaction = await usd.connect(deployer).transfer(liquidityProvider.address, tokens(10000000)) // NOTE: use 'connect' to connect to a contract
+    await transaction.wait()
+    transaction = await sobek.connect(deployer).transfer(liquidityProvider.address, tokens(10000000)) // NOTE: "let" already done in first declaration
+    await transaction.wait()
 
 
     console.log(`Deploying Market contracts ...\n`)
@@ -60,13 +67,10 @@ async function main() {
     console.log(`AMM2 contract deployed to: ${amm2.address}\n`)  
     
       
-    // Fund AMMs
-    
+    // Fund AMMs    
     console.log(`Adding Liquidity to AMMs...\n`)
     console.log(`Fetching tokens and transferring to accounts ... \n`)
-
-   // const usdtAmount = 1000
-   // const sobekAmount = 1000
+   
     let amm1UsdAmount = tokens(1000000)
     let amm1SobekAmount = tokens(1000000)
     
@@ -76,8 +80,33 @@ async function main() {
 
     await usd.transfer(amm1.address, amm1UsdAmount)
     await sobek.transfer(amm1.address, amm1SobekAmount)
+
+    //Liquidity Provider Approves tokens on AMM1
+    transaction = await usd.connect(liquidityProvider).approve(amm1.address, amm1UsdAmount)
+    await transaction.wait()
+
+    transaction = await sobek.connect(liquidityProvider).approve(amm1.address, amm1SobekAmount)
+    await transaction.wait()
+  
+    // Liquidity Provider Adds liquidity on AMM1
+    transaction = await amm1.connect(liquidityProvider).addLiquidity(amm1UsdAmount, amm1SobekAmount)
+    await transaction.wait()
+
+
     await usd.transfer(amm2.address, amm2UsdAmount)
     await sobek.transfer(amm2.address, amm2SobekAmount)
+
+    //Liquidity Provider Approves tokens on AMM2
+    transaction = await usd.connect(liquidityProvider).approve(amm2.address, amm2UsdAmount)
+    await transaction.wait()
+
+    transaction = await sobek.connect(liquidityProvider).approve(amm2.address, amm2SobekAmount)
+    await transaction.wait()
+  
+    // Liquidity Provider Adds liquidity on AMM2
+    transaction = await amm1.connect(liquidityProvider).addLiquidity(amm2UsdAmount, amm2SobekAmount)
+    await transaction.wait()
+
     
     const bal = await sobek.balanceOf(deployer.address)
     console.log(`sobek balance: ${ethers.utils.formatEther(bal)}\n`)
@@ -85,7 +114,9 @@ async function main() {
     // Get current AMM1 Pool Balance   
     console.log(`AMM1 USD Token Balance: ${ethers.utils.formatEther(await usd.balanceOf(amm1.address))} \n`)
     console.log(`AMM1 Sobek Token Balance: ${ethers.utils.formatEther(await sobek.balanceOf(amm1.address))} \n`)
-  
+   
+    
+
     // Get current AMM2 Pool Balance    
     console.log(`AMM2 USD Token Balance: ${ethers.utils.formatEther(await usd.balanceOf(amm2.address))} \n`)
     console.log(`AMM2 Sobek Token Balance: ${ethers.utils.formatEther(await sobek.balanceOf(amm2.address))} \n`)
