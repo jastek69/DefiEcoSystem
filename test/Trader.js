@@ -9,6 +9,14 @@ const tokens = (n) => {
 const ether = tokens
 const shares = ether
 
+/***************************************************
+* Tests:
+* 1.	2 simple swaps on each AMM
+* 2.	Arbitrage trade without loan
+* 3.	Arbitrage trade with Flashloan
+* 4. Make sure it can borrow and payback FlashLoan
+****************************************************/
+
 describe('Trader', () => {
   
   // accounts
