@@ -27,10 +27,10 @@ const main = async () => {
   const { chainId } = await ethers.provider.getNetwork()
 
   // Fetch deployed tokens
-  const usd = await ethers.getContractAt('USD Token', config[chainId].usd.address)
+  const usd = await ethers.getContractAt('Token', config[chainId].usd.address)
   console.log(`USD Token fetched: ${usd.address}\n` )
 
-  const sobek = await ethers.getContractAt('Sobek Token', config[chainId].sobek.address)
+  const sobek = await ethers.getContractAt('Token', config[chainId].sobek.address)
   console.log(`Sobek Token fetched: ${sobek.address}\n` )
 
   console.log(`Preparing Transaction...\n`)
