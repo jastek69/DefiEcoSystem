@@ -50,20 +50,11 @@ const main = async () => {
  
   
   // Execute FlashLoan  
-  console.log(`Executing Flashloan...\n`)
-  
-  // check usd balance for Trader.sol
-  let balance1 = await usd.balanceOf(trader.address)
-  console.log(`Trader contract USD Token balance before swap: ${ethers.utils.formatEther(balance1)}\n`)
-
-  // check sobek bal for trader.sol
-  let balance2 = await sobek.balanceOf(trader.address)
-  console.log(`Trader contract SOB Token balance before swap: ${ethers.utils.formatEther(balance2)}\n`)    
-  
+  console.log(`Executing Flashloan...\n`)  
       
   // call flashloan function
   transaction = await trader.connect(deployer).flashLoan(borrowAmount);
- // result = await transaction.wait()
+  // result = await transaction.wait()
 
   // Emit an Event
   await expect(transaction).to.emit(trader, 'Loan').withArgs(
@@ -71,15 +62,13 @@ const main = async () => {
     borrowAmount
   )
 
-  // check token1 bal for deployer wallet (this is who received profit)
-  balance1 = await usd.balanceOf(deployer.address)
+  // check token1 bal for deployer wallet (this is who received profit) 
   deployerUSDBalance = await usd.balanceOf(deployer.address)
     
- // expect(deployerUSDBalance).to.equal(balance3)
- // console.log(`Deployers USD Token balance after swap: ${ethers.utils.formatEther(deployerUSDBalance)}\n`)    
+  // expect(deployerUSDBalance).to.equal(balance3)
+  // console.log(`Deployers USD Token balance after swap: ${ethers.utils.formatEther(deployerUSDBalance)}\n`)    
 
-  // check token2 bal for deployer wallet (this is who received profit)
-  balance2 = await sobek.balanceOf(deployer.address)
+  // check token2 bal for deployer wallet (this is who received profit) 
   let deployerSOBBalance = await sobek.balanceOf(deployer.address)
   // expect(deployerSOBBalance).to.equal(balance2)
   console.log(`Deployers Sobek Token balance after swap: ${ethers.utils.formatEther(deployerSOBBalance)}\n`) 
