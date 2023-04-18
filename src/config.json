@@ -1,22 +1,22 @@
 {
   "31337": {
     "usd": {
-      "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e"
+      "address": "0x18E317A7D70d8fBf8e6E893616b52390EbBdb629"
     },
     "sobek": {
-      "address": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0"
+      "address": "0x4b6aB5F819A515382B0dEB6935D793817bB4af28"
     },
     "amm1": {
-      "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82"
+      "address": "0xF8e31cb472bc70500f08Cd84917E5A1912Ec8397"
     },
     "amm2": {
-      "address": "0x9A676e781A523b5d0C0e43731313A708CB607508"
+      "address": "0xc0F115A19107322cFBf1cDBC7ea011C19EbDB4F8"
     },
     "flashLoanPool": {
-      "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c"
+      "address": "0xfaAddC93baf78e89DCf37bA67943E1bE8F37Bb8c"
     },
     "trader" : {
-      "address": "0x59b670e9fA9D0A427751Af201D676719a970857b"
+      "address": "0x3347B4d90ebe72BeFb30444C9966B2B990aE9FcB"
     }
   }
 }

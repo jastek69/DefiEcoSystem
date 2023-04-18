@@ -138,6 +138,17 @@ async function main() {
     await trader.deployed();
     console.log(`Trader deployed to: ${trader.address}\n`);
 
+    // send 1 million tokens to trader.sol
+    console.log (`Transferring tokens to Trader \n`);   
+    let traderUSDAmount = tokens(1000000)
+    let traderSOBAmount = tokens(1000000)
+
+    transaction = await usd.connect(deployer).transfer(trader.address, traderUSDAmount)
+    await transaction.wait()
+
+    transaction = await sobek.connect(deployer).transfer(trader.address, traderSOBAmount)
+    await transaction.wait()
+
     console.log(`Deployment completed\n`)
 }
 

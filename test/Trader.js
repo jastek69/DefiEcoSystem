@@ -215,12 +215,12 @@ describe('Trader', () => {
     
     // check token1 balance for Trader.sol
     let balance1 = await token1.balanceOf(trader.address)
-    console.log(`Trader contract USD Token balance after swap: ${ethers.utils.formatEther(balance1)}\n`)
+    console.log(`Trader contract USD Token balance before swap: ${ethers.utils.formatEther(balance1)}\n`)
 
     
-    // check token2 bal for trader.sol
+    // check token2 bal for Trader.sol
     let balance2 = await token2.balanceOf(trader.address)
-    console.log(`Trader contract SOB Token balance after swap: ${ethers.utils.formatEther(balance2)}\n`)    
+    console.log(`Trader contract SOB Token balance before swap: ${ethers.utils.formatEther(balance2)}\n`)    
     
         
     // call flashloan function
