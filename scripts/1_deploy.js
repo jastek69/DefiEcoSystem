@@ -127,8 +127,13 @@ async function main() {
     // Adding Liquidity to FlashLoan Pool
     console.log(`Funding FlashLoan Pool with USD\n`)
     let flashLoanUsdAmount = tokens(5000000)  
-    await usd.transfer(flashLoanPool.address, flashLoanUsdAmount)
-    
+    // await usd.transfer(flashLoanPool.address, flashLoanUsdAmount)
+    transaction = await usd.connect(deployer).approve(flashLoanPool.address, flashLoanUsdAmount)
+    await transaction.wait()
+    transaction = await flashLoanPool.connect(deployer).depositTokens(flashLoanUsdAmount)
+    await transaction.wait()
+
+
     const poolBal = await usd.balanceOf(flashLoanPool.address)
     console.log(`FlashLoan Pool balance USD: ${ethers.utils.formatEther(poolBal)}\n`)
 
@@ -137,17 +142,6 @@ async function main() {
     const trader = await Trader.deploy(usd.address, sobek.address, flashLoanPool.address, amm1.address, amm2.address);
     await trader.deployed();
     console.log(`Trader deployed to: ${trader.address}\n`);
-
-    // send 1 million tokens to trader.sol
-    console.log (`Transferring tokens to Trader \n`);   
-    let traderUSDAmount = tokens(1000000)
-    let traderSOBAmount = tokens(1000000)
-
-    transaction = await usd.connect(deployer).transfer(trader.address, traderUSDAmount)
-    await transaction.wait()
-
-    transaction = await sobek.connect(deployer).transfer(trader.address, traderSOBAmount)
-    await transaction.wait()
 
     console.log(`Deployment completed\n`)
 }

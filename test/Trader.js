@@ -145,7 +145,7 @@ describe('Trader', () => {
     let poolAmount = tokens(500000000)
     transaction = await token1.connect(arbitrager).approve(flashLoanPool.address, poolAmount)
     await transaction.wait()
-    await flashLoanPool.connect(arbitrager).depositTokens(poolAmount)
+    transaction = await flashLoanPool.connect(arbitrager).depositTokens(poolAmount)
     await transaction.wait()
 
     // Flash Loan Pool Balance
