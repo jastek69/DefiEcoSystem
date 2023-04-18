@@ -18,7 +18,7 @@ const main = async () => {
   const arbitrager = accounts[1]
   const liquidityProvider = accounts[2]
     
-  let borrowAmount = tokens(1000000)
+  let borrowAmount = tokens(10000)
     
   let token1, token2
   let transaction, result
