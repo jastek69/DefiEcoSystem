@@ -30,7 +30,6 @@
     "eject": "react-scripts eject"
   },
   "author": "jastek.sweeney@gmail.com",
-  "license": "ISC",
   "eslintConfig": {
     "extends": [
       "react-app",
