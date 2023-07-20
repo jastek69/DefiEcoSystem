@@ -18,7 +18,7 @@ const main = async () => {
   const arbitrager = accounts[1]
   const liquidityProvider = accounts[2]
     
-  let borrowAmount = tokens(10000)
+  let borrowAmount = tokens(50000)
     
   let token1, token2
   let transaction, result
@@ -65,17 +65,11 @@ const main = async () => {
   // check token1 bal for deployer wallet (this is who received profit) 
   deployerUSDBalance = await usd.balanceOf(deployer.address)
     
-  // expect(deployerUSDBalance).to.equal(balance3)
-  // console.log(`Deployers USD Token balance after swap: ${ethers.utils.formatEther(deployerUSDBalance)}\n`)    
-
   // check token2 bal for deployer wallet (this is who received profit) 
   let deployerSOBBalance = await sobek.balanceOf(deployer.address)
   // expect(deployerSOBBalance).to.equal(balance2)
   console.log(`Deployers Sobek Token balance after swap: ${ethers.utils.formatEther(deployerSOBBalance)}\n`) 
-  console.log(`Transaction Successful!\n`)
-  // console.log(`-- View Transaction --`)
-  // console.log(`https://polygonscan.com/tx/${result.transactionHash}`)
-  // Fetch token balance after   
+  console.log(`Transaction Successful!\n`)    
 }
 
 main()

@@ -71,7 +71,7 @@ contract Trader is ReentrancyGuard {
 
     function arbitrage(            
         address _flashToken, // USD
-        address _arbToken,   // NOTE: Sobek Token can this be replaced by token2 and thus removed
+        address _arbToken,   // NOTE: Sobek Token
         uint256 _flashAmount            
     ) public  {        // ReentrancyGuard
             

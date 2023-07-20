@@ -18,5 +18,45 @@
     "trader" : {
       "address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016"
     }
+  },
+  "11155111": {
+    "usd": {
+      "address": "0x3a6a5188A8580BBb438526525A5Bd54dF55b3B20"
+    },
+    "sobek": {
+      "address": "0x9287A8C3D0256a2f0eEE5Cd160d68097D5700905"
+    },
+    "amm1": {
+      "address": "0xE83DF6261CBb6F9a7039FfFF03374b54c73c24B9"
+    },
+    "amm2": {
+      "address": "0x0F7577cB6Cea57EB6Fe4409c360Cd1cF4FC716B9"
+    },
+    "flashLoanPool": {
+      "address": "0xa14FFb7b509829b04c26d031D644037b6c8BD272"
+    },
+    "trader" : {
+      "address": "0x30Ba04E9c1601E0CEab141dD106Bfe6Cc9a3a824"
+    }
+  },
+  "7701": {
+    "usd": {
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+    },
+    "sobek": {
+      "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+    },
+    "amm1": {
+      "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
+    },
+    "amm2": {
+      "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
+    },
+    "flashLoanPool": {
+      "address": "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0"
+    },
+    "trader" : {
+      "address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016"
+    }
   }
 }
